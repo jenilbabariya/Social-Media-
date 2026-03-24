@@ -1,0 +1,22 @@
+<%- include('partials/header', {header}) %>
+
+<div class="feed-page-container">
+  <div class="feed-container mx-auto" style="max-width: 600px;">
+    <!-- Feed Posts Container -->
+    <div id="feedPosts" class="feed-posts">
+      <!-- Posts will be injected here by dashboard.js -->
+    </div>
+
+    <!-- Loading Spinner & End of Feed Indicator -->
+    <div class="posts-loader" id="feedLoader">
+      <div class="spinner"></div>
+      <p>Loading posts...</p>
+    </div>
+    
+    <div class="no-more-posts" id="noMoreFeedPosts">
+      <p>You're all caught up!</p>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer', {footer: {js: ['dashboard']}}) %>

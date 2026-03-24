@@ -1,0 +1,19 @@
+<%- include('partials/header.ejs') %>
+
+<div class="search-container">
+    <div class="search-header mb-4">
+        <h2 class="fw-bold">Search</h2>
+        <div class="search-input-wrapper position-relative">
+            <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+            <input type="text" id="userSearchInput" class="form-control form-control-lg ps-5 rounded-pill border-0 shadow-sm" placeholder="Search for usernames..." autocomplete="off">
+        </div>
+    </div>
+
+    <div id="searchResults" class="search-results mt-4">
+        <div class="text-center text-muted mt-5">
+            <p>Start typing to search for users</p>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer.ejs') %>

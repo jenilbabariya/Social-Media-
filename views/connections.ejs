@@ -1,0 +1,62 @@
+<%- include("partials/header", {header}) %>
+
+<div class="connections-container">
+
+    <!-- Tab Bar -->
+    <div class="tabs">
+        <a href="/profile/<%= body.userId %>/connections?type=followers"
+           class="tab <%= body.type === 'followers' ? 'active' : '' %>">
+            Followers
+        </a>
+        <a href="/profile/<%= body.userId %>/connections?type=following"
+           class="tab <%= body.type === 'following' ? 'active' : '' %>">
+            Following
+        </a>
+    </div>
+
+    <!-- Users List -->
+    <div class="list">
+        <% if (body.users.length === 0) { %>
+            <div class="empty">
+                <i class="bi bi-people" style="font-size: 40px; color: var(--bs-primary);"></i>
+                <p class="mt-2">No <%= body.type %> yet</p>
+            </div>
+        <% } %>
+
+        <% body.users.forEach(person => { %>
+            <a href="/profile/<%= person.username%>" class="user-card text-decoration-none">
+                <img src="<%= person.profilePicture || '/images/default-avatar.png' %>" alt="<%= person.username %>" />
+                <div>
+                    <p class="mb-0 fw-semibold text-dark"><%= person.username %></p>
+                </div>
+            </a>
+        <% }) %>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination">
+
+        <form method="GET">
+            <input type="hidden" name="type" value="<%= body.type %>">
+            <label class="me-2 text-muted" style="font-size: 14px;">Per page:</label>
+            <select name="limit" onchange="this.form.submit()" class="form-select form-select-sm d-inline-block w-auto">
+                <option value="5"  <%= body.limit==5  ? 'selected' : '' %>>5</option>
+                <option value="10" <%= body.limit==10 ? 'selected' : '' %>>10</option>
+                <option value="20" <%= body.limit==20 ? 'selected' : '' %>>20</option>
+            </select>
+        </form>
+
+        <div class="page-buttons">
+            <% if (body.page > 1) { %>
+                <a href="?type=<%= body.type %>&page=<%= body.page-1 %>&limit=<%= body.limit %>" class="btn btn-primary-custom">Prev</a>
+            <% } %>
+            <% if (body.page < body.totalPages) { %>
+                <a href="?type=<%= body.type %>&page=<%= body.page+1 %>&limit=<%= body.limit %>" class="btn btn-primary-custom">Next</a>
+            <% } %>
+        </div>
+
+    </div>
+
+</div>
+
+<%- include("partials/footer", {footer}) %>

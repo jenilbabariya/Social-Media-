@@ -1,0 +1,54 @@
+<%- include('partials/header', {header: header}) %>
+
+<div class="edit-profile-wrapper">
+    <form id="editProfileForm" enctype="multipart/form-data">
+        <!-- Top Header -->
+        <div class="edit-header">
+            <h1>Edit Profile</h1>
+            <button type="submit" class="btn-save-link" id="saveBtn">Save Changes</button>
+        </div>
+
+        <!-- Media Section -->
+        <div class="media-section">
+            <div class="mockup-cover-container" id="coverPreview" style="background-image: url('<%= body.profile?.coverPhoto || "/images/default-cover.jpg" %>');">
+                <input type="file" id="coverInput" name="coverPhoto" accept="image/*" class="d-none">
+                <label for="coverInput" class="media-edit-overlay">
+                    <span>Change</span>
+                </label>
+            </div>
+
+            <div class="mockup-profile-pic-container">
+                <img id="profilePreview" src="<%= body.profile?.profilePicture || '/images/default-avatar.png' %>" alt="Profile">
+                <input type="file" id="profileInput" name="profilePicture" accept="image/*" class="d-none">
+                <label for="profileInput" class="media-edit-overlay">
+                    <span>Change</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Form Fields -->
+        <div class="form-fields">
+            <div class="mockup-input-group">
+                <label class="mockup-form-label" for="fullname">Name</label>
+                <input type="text" id="fullname" name="fullname" class="mockup-input-field" value="<%= body.user?.fullname || "" %>" placeholder="Alex Sterling">
+                <div id="error-fullname" class="error-feedback"></div>
+            </div>
+
+            <div class="mockup-input-group">
+                <label class="mockup-form-label" for="username">Username</label>
+                <div class="username-wrapper">
+                    <span class="at-symbol">@</span>
+                    <input type="text" id="username" name="username" class="mockup-input-field" value="<%= body.user?.username || "" %>" placeholder="alexsterling">
+                </div>
+                <div id="error-username" class="error-feedback"></div>
+            </div>
+
+            <div class="mockup-input-group">
+                <label class="mockup-form-label" for="bio">Bio</label>
+                <textarea id="bio" name="bio" class="mockup-input-field mockup-bio-textarea" placeholder="Describe yourself..."><%= body.profile?.bio || "" %></textarea>
+            </div>
+        </div>
+    </form>
+</div>
+
+<%- include("partials/footer", {footer: footer}) %>

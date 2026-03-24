@@ -1,0 +1,164 @@
+/* Edit Profile Page - Mockup Match Styles */
+.edit-profile-body {
+    background-color: #f8faff !important;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+
+.edit-profile-wrapper {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    padding-bottom: 100px; /* Space for bottom nav */
+}
+
+/* Header */
+.edit-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding: 10px 0;
+}
+
+.edit-header h1 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #004a99; /* Deep blue from mockup */
+    margin: 0;
+}
+
+.btn-save-link {
+    background: #007bff;
+    border: none;
+    color: #fff;
+    font-weight: 600;
+    font-size: 14px;
+    padding: 8px 18px;
+    border-radius: 10px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+
+.btn-save-link:hover {
+    background: #0056b3;
+}
+
+/* Media Section */
+.media-section {
+    position: relative;
+    margin-bottom: 40px;
+}
+
+.mockup-cover-container {
+    height: 180px;
+    background-color: #e2eadb; /* Light green/beige from mockup */
+    border-radius: 20px;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    background-size: cover;
+    background-position: center;
+}
+
+.mockup-profile-pic-container {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 4px solid #fff;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    position: relative;
+    margin-top: -60px;
+    margin-left: 20px;
+    background-color: #fff;
+    overflow: hidden;
+    z-index: 10;
+    cursor: pointer;
+}
+
+.mockup-profile-pic-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.media-edit-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s;
+    color: #fff;
+    font-size: 12px;
+}
+
+.mockup-cover-container:hover .media-edit-overlay,
+.mockup-profile-pic-container:hover .media-edit-overlay {
+    opacity: 1;
+}
+
+/* Form Styles */
+.mockup-form-label {
+    font-size: 14px;
+    color: #666;
+    font-weight: 500;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.mockup-input-group {
+    margin-bottom: 24px;
+}
+
+.mockup-input-field {
+    background-color: #e0e5eb !important; /* Specific light gray from mockup */
+    border: none !important;
+    border-radius: 12px !important;
+    padding: 16px 20px !important;
+    font-size: 16px !important;
+    color: #333 !important;
+    width: 100% !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+.username-wrapper {
+    position: relative;
+}
+
+.username-wrapper .at-symbol {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #888;
+    font-size: 16px;
+    pointer-events: none;
+}
+
+.username-wrapper .mockup-input-field {
+    padding-left: 40px !important;
+}
+
+.mockup-bio-textarea {
+    min-height: 120px;
+    resize: none;
+}
+
+.error-feedback {
+    color: #dc3545;
+    font-size: 12px;
+    margin-top: 4px;
+    font-weight: 500;
+    display: none; /* Hidden by default */
+}
+
+/* Override Global Styles for this page - Side bar is now visible */

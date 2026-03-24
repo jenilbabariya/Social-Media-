@@ -1,0 +1,86 @@
+<%- include('partials/header', {header}) %>
+
+<div class="create-post-container mx-auto mt-4" style="max-width: 700px; background: #fff; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+    <h3 class="mb-4 fw-bold text-center"><%= body.post ? 'Edit Post' : 'Create a New Post' %></h3>
+
+    <form id="createPostForm" enctype="multipart/form-data" data-edit="<%= body.post ? 'true' : 'false' %>" data-postid="<%= body.post ? body.post._id : '' %>">
+        
+        <!-- Media Upload Section -->
+        <% if (!body.post || body.post.status !== 'published') { %>
+        <div class="mb-4">
+            <label class="form-label fw-bold">Upload Media (Images/Videos - Max 10)</label>
+            <div id="dropZone" class="drop-zone p-5 text-center rounded border" style="border: 2px dashed #ccc; cursor: pointer; transition: 0.3s; background: #f8f9fa;">
+                <i class="bi bi-cloud-arrow-up display-4 text-primary"></i>
+                <p class="mb-0 mt-2 text-muted fw-bold">Click to browse or drag and drop files here</p>
+                <small class="text-muted">Maximum 10 files allowed</small>
+            </div>
+            <input type="file" id="mediaInput" name="postMedia" multiple accept="image/*,video/*" class="d-none">
+        </div>
+        <% } %>
+
+        <!-- Carousel Preview Section -->
+        <div id="previewSection" class="mb-4 <%= body.post ? '' : 'd-none' %>">
+            <label class="form-label fw-bold"><%= (body.post && body.post.status === 'published') ? 'Media' : 'Preview (Showing up to 10)' %></label>
+            <div id="mediaCarousel" class="carousel slide border rounded bg-dark position-relative" data-bs-wrap="false" data-bs-interval="false" style="overflow:hidden; height: 350px;">
+                <div class="carousel-inner h-100" id="carouselInner">
+                    <!-- Carousel items will be injected here -->
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#mediaCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#mediaCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+                <!-- Add More Button overlayed on carousel -->
+                <button type="button" id="addMoreBtn" class="btn btn-light position-absolute top-0 end-0 m-2 d-none btn-sm" style="z-index: 10;">
+                    <i class="bi bi-plus-circle"></i> Add More
+                </button>
+            </div>
+            <p class="text-danger mt-2 d-none fw-bold" id="maxFilesWarning">You can only upload up to 10 files. Extras have been removed.</p>
+            <div id="thumbnailsContainer" class="d-flex mt-2 gap-2" style="overflow-x: auto;">
+                <!-- Thumbnails will be injected here -->
+            </div>
+        </div>
+
+        <!-- Caption -->
+        <div class="mb-3">
+            <label for="caption" class="form-label fw-bold">Caption</label>
+            <textarea class="form-control rounded-3" id="caption" name="caption" rows="3" placeholder="What's on your mind?"><%= body.post ? body.post.caption : '' %></textarea>
+        </div>
+
+        <!-- Location -->
+        <div class="mb-3">
+            <label for="location" class="form-label fw-bold">Location</label>
+            <input type="text" class="form-control rounded-pill" id="location" name="location" placeholder="Add location (optional)" value="<%= body.post ? body.post.location : '' %>">
+        </div>
+
+        <!-- Schedule Options -->
+        <div class="mb-4">
+            <div class="form-check form-switch mb-2">
+                <input class="form-check-input" type="checkbox" id="scheduleSwitch">
+                <label class="form-check-label fw-bold" for="scheduleSwitch">Schedule this post</label>
+            </div>
+            
+            <div id="scheduleOptions" class="card card-body bg-light d-none border-0">
+                <label for="publishAt" class="form-label fw-bold">Select Date and Time</label>
+                <!-- Setting min and step attributes. Min will be updated via JS to ensure only present/future -->
+                <!-- step="300" forces 5-minute intervals (300 seconds) -->
+                <input type="datetime-local" class="form-control rounded-pill" id="publishAt" name="publishAt" step="300">
+                <small class="text-muted mt-1 d-block">Time must be in the future, at 5-minute intervals.</small>
+            </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="d-flex gap-3 justify-content-end align-items-center mt-5">
+            <% if (!body.post || body.post.status === 'draft') { %>
+              <button type="button" id="saveDraftBtn" class="btn btn-outline-secondary px-4 rounded-pill fw-bold">Save Draft</button>
+            <% } %>
+            <button type="submit" id="submitBtn" class="btn btn-primary px-4 rounded-pill fw-bold"><%= body.post ? (body.post.status === 'scheduled' ? 'Update Schedule' : 'Update Post') : 'Post Now' %></button>
+        </div>
+    </form>
+</div>
+
+<div id="existingPostData" data-post='<%- body.post ? JSON.stringify(body.post).replace(/'/g, "&apos;") : "null" %>' style="display: none;"></div>
+<%- include("partials/footer", {footer}) %>

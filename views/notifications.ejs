@@ -1,0 +1,138 @@
+<%- include("partials/header", {header}) %>
+
+<div class="notifications-container">
+
+    <!-- Page Title -->
+    <div class="notifications-header">
+        <h5 class="text-primary-custom fw-bold mb-0">Notifications</h5>
+        <% if (body.unreadCount > 0) { %>
+            <button class="btn-mark-read" id="markAllRead">Mark all as read</button>
+        <% } %>
+    </div>
+
+    <!-- Tabs -->
+    <div class="notif-tabs">
+        <button class="notif-tab <%= body.activeTab === 'notifications' ? 'active' : '' %>" id="tab-notifications" data-tab="notifications">
+            Notifications
+            <% if (body.unreadCount > 0) { %>
+                <span class="notif-badge" id="notif-unread-badge"><%= body.unreadCount %></span>
+            <% } %>
+        </button>
+        <button class="notif-tab <%= body.activeTab === 'requests' ? 'active' : '' %>" id="tab-requests" data-tab="requests">
+            Requests
+            <% if (body.requestCount > 0) { %>
+                <span class="notif-badge" id="requests-badge"><%= body.requestCount %></span>
+            <% } %>
+        </button>
+    </div>
+
+    <!-- ─── Notifications Panel ─────────────────────────────────────── -->
+    <div class="notif-panel <%= body.activeTab === 'notifications' ? '' : 'hidden' %>" id="panel-notifications">
+        <% if (body.notifications.length === 0) { %>
+            <div class="notifications-empty">
+                <i class="bi bi-bell" style="font-size: 40px; color: var(--bs-primary);"></i>
+                <p class="mt-2">No notifications yet</p>
+            </div>
+        <% } %>
+
+        <% body.notifications.forEach(function(notif) { %>
+            <div class="notification-card <%= notif.isRead ? '' : 'unread' %>" data-id="<%= notif._id %>">
+
+                <div class="notification-avatar">
+                    <img src="<%= notif.senderProfile?.profilePicture || '/images/default-avatar.png' %>"
+                         alt="<%= notif.sender?.username %>" />
+                </div>
+
+                <div class="notification-content">
+                    <p class="notification-text">
+                        <span class="notification-username">@<%= notif.sender?.username %></span>
+
+                        <% if (notif.type === 'follow') { %>
+                            started following you
+                        <% } else if (notif.type === 'like') { %>
+                            liked your post
+                        <% } else if (notif.type === 'comment') { %>
+                            commented on your post
+                        <% } else if (notif.type === 'mention') { %>
+                            mentioned you in a post
+                        <% } %>
+
+                    </p>
+                    <span class="notification-time"><%= notif.timeAgo %></span>
+                </div>
+
+                <% if (!notif.isRead) { %>
+                    <span class="notification-dot"></span>
+                <% } %>
+
+            </div>
+        <% }) %>
+
+        <!-- Notifications Pagination -->
+        <% if (body.totalPages > 1) { %>
+        <div class="notifications-pagination">
+            <% if (body.page > 1) { %>
+                <a href="?tab=notifications&page=<%= body.page - 1 %>&reqPage=<%= body.reqPage %>" class="btn-primary-custom">Prev</a>
+            <% } %>
+            <span class="text-muted-custom">Page <%= body.page %> of <%= body.totalPages %></span>
+            <% if (body.page < body.totalPages) { %>
+                <a href="?tab=notifications&page=<%= body.page + 1 %>&reqPage=<%= body.reqPage %>" class="btn-primary-custom">Next</a>
+            <% } %>
+        </div>
+        <% } %>
+    </div>
+
+    <!-- ─── Requests Panel ──────────────────────────────────────────── -->
+    <div class="notif-panel <%= body.activeTab === 'requests' ? '' : 'hidden' %>" id="panel-requests">
+        <% if (body.followRequests.length === 0) { %>
+            <div class="notifications-empty">
+                <i class="bi bi-person-plus" style="font-size: 40px; color: var(--bs-primary);"></i>
+                <p class="mt-2">No follow requests</p>
+            </div>
+        <% } %>
+
+        <% body.followRequests.forEach(function(req) { %>
+            <div class="notification-card request-card" data-request-id="<%= req._id %>" id="req-<%= req._id %>">
+
+                <div class="notification-avatar">
+                    <img src="<%= req.senderProfile?.profilePicture || '/images/default-avatar.png' %>"
+                         alt="<%= req.sender?.username %>" />
+                </div>
+
+                <div class="notification-content">
+                    <p class="notification-text">
+                        <span class="notification-username">@<%= req.sender?.username %></span>
+                        wants to follow you
+                    </p>
+                    <span class="notification-time"><%= req.timeAgo %></span>
+                </div>
+
+                <div class="request-actions">
+                    <button class="btn-accept" data-id="<%= req._id %>">
+                        <i class="bi bi-check-lg"></i> Accept
+                    </button>
+                    <button class="btn-reject" data-id="<%= req._id %>">
+                        <i class="bi bi-x-lg"></i> Reject
+                    </button>
+                </div>
+
+            </div>
+        <% }) %>
+
+        <!-- Requests Pagination -->
+        <% if (body.reqTotalPages > 1) { %>
+        <div class="notifications-pagination">
+            <% if (body.reqPage > 1) { %>
+                <a href="?tab=requests&page=<%= body.page %>&reqPage=<%= body.reqPage - 1 %>" class="btn-primary-custom">Prev</a>
+            <% } %>
+            <span class="text-muted-custom">Page <%= body.reqPage %> of <%= body.reqTotalPages %></span>
+            <% if (body.reqPage < body.reqTotalPages) { %>
+                <a href="?tab=requests&page=<%= body.page %>&reqPage=<%= body.reqPage + 1 %>" class="btn-primary-custom">Next</a>
+            <% } %>
+        </div>
+        <% } %>
+    </div>
+
+</div>
+
+<%- include("partials/footer", {footer}) %>

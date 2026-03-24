@@ -1,0 +1,55 @@
+<%- include('partials/header', { header }) %>
+
+<div class="settings-container custom-shadow-primary">
+
+        <h3 class="settings-title text-primary-custom mb-4">
+            Account Settings
+        </h3>
+
+        <!-- PRIVACY SWITCH -->
+        <div class="settings-card">
+            <div class="settings-left">
+                <h5>Private Account</h5>
+                <p class="settings-desc">
+                    When enabled, only followers can see your posts.
+                </p>
+            </div>
+
+            <div class="settings-right">
+                <label class="switch">
+                    <input type="checkbox" id="privacyToggle"
+                        <%= body?.isPrivate ? "checked" : "" %> >
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <div class="settings-card clickable-card" id="changePassword">
+            <div class="settings-left">
+                <h5>Change Password</h5>
+                <p class="settings-desc">
+                    Update your account password securely.
+                </p>
+            </div>
+            <div class="settings-arrow">
+                →
+            </div>
+        </div>
+
+        <div class="settings-card clickable-card danger-card" id="deleteAccount">
+            <div class="settings-left">
+                <h5>Delete Account</h5>
+                <p class="settings-desc">
+                    Permanently delete your account and all data.
+                </p>
+            </div>
+            <div class="settings-arrow">
+                →
+            </div>
+        </div>
+
+    </div>
+
+
+
+<%- include("partials/footer", { footer }) %>

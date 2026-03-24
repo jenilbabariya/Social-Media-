@@ -1,0 +1,143 @@
+<%- include('partials/header', {header}) %>
+
+<div class="single-post-page-root" id="singlePostPageRoot" data-post-id="<%= body.post._id %>">
+    <div class="single-post-container">
+        <!-- LEFT SIDE: Media -->
+        <div class="post-media-side">
+            <% if (body.post.media && body.post.media.length > 1) { %>
+                <div id="postCarousel" class="carousel slide w-100 h-100" data-bs-ride="false">
+                    <div class="carousel-inner h-100">
+                        <% body.post.media.forEach(function(m, index) { %>
+                            <div class="carousel-item <%= index === 0 ? 'active' : '' %> h-100">
+                                <div class="d-flex align-items-center justify-content-center h-100">
+                                    <% if (m.type === "video") { %>
+                                        <video src="<%= m.url %>" controls></video>
+                                    <% } else { %>
+                                        <img src="<%= m.url %>">
+                                    <% } %>
+                                </div>
+                            </div>
+                        <% }); %>
+                    </div>
+                    
+                    <button class="carousel-control-prev custom-carousel-arrow prev" type="button" data-bs-target="#postCarousel" data-bs-slide="prev">
+                        <i class="bi bi-chevron-left"></i>
+                    </button>
+                    <button class="carousel-control-next custom-carousel-arrow next" type="button" data-bs-target="#postCarousel" data-bs-slide="next">
+                        <i class="bi bi-chevron-right"></i>
+                    </button>
+
+                    <div class="carousel-indicators position-absolute bottom-0 mb-3">
+                        <% body.post.media.forEach(function(_, index) { %>
+                            <button type="button" data-bs-target="#postCarousel" data-bs-slide-to="<%= index %>" class="<%= index === 0 ? 'active' : '' %>" aria-current="<%= index === 0 ? 'true' : 'false' %>"></button>
+                        <% }); %>
+                    </div>
+                </div>
+            <% } else if (body.post.media && body.post.media.length === 1) { %>
+                <% const m = body.post.media[0]; %>
+                <div class="w-100 h-100 d-flex align-items-center justify-content-center">
+                    <% if (m.type === "video") { %>
+                        <video src="<%= m.url %>" controls></video>
+                    <% } else { %>
+                        <img src="<%= m.url %>">
+                    <% } %>
+                </div>
+            <% } %>
+        </div>
+
+        <!-- RIGHT SIDE: Sidebar -->
+        <div class="post-details-side">
+            <div class="details-header">
+                <a href="/profile/<%= body.post.user.username %>" class="text-decoration-none d-flex align-items-center">
+                    <img src="<%= body.post.user.profilePicture || '/images/default-avatar.png' %>" class="rounded-circle me-3" width="32" height="32" style="object-fit: cover;">
+                    <div class="d-flex flex-column">
+                        <span class="details-username"><%= body.post.user.username %></span>
+                        <% if (body.post.location) { %>
+                            <span class="details-location muted"><%= body.post.location %></span>
+                        <% } %>
+                    </div>
+                </a>
+
+                <div class="dropdown">
+                    <button class="btn btn-link text-dark p-0 border-0 shadow-none" type="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-three-dots"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <% if (body.post.user._id.toString() === body.currentUser._id.toString()) { %>
+                            <li><a class="dropdown-item" href="/profile/edit-post/<%= body.post._id %>?type=posts"><i class="bi bi-pencil me-2"></i>Edit</a></li>
+                            <li><button class="dropdown-item text-danger" id="deletePostBtn" data-id="<%= body.post._id %>"><i class="bi bi-trash me-2"></i>Delete</button></li>
+                        <% } else { %>
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-flag me-2"></i>Report</a></li>
+                        <% } %>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="details-content-scrollable" id="commentsContainer">
+                <!-- Caption -->
+                <% if (body.post.caption) { %>
+                    <div class="d-flex mb-3">
+                        <a href="/profile/<%= body.post.user.username %>" class="flex-shrink-0">
+                            <img src="<%= body.post.user.profilePicture || '/images/default-avatar.png' %>" class="rounded-circle me-3" width="32" height="32" style="object-fit: cover;">
+                        </a>
+                        <div>
+                            <span class="fw-bold me-1">
+                                <a href="/profile/<%= body.post.user.username %>" class="text-decoration-none text-dark"><%= body.post.user.username %></a>
+                            </span>
+                            <span style="word-break: break-word; font-size: 14px;"><%= body.post.caption %></span>
+                        </div>
+                    </div>
+                <% } %>
+                
+                <div id="commentsList">
+                    <!-- Comments will be loaded here -->
+                </div>
+            </div>
+
+            <div class="details-footer">
+                <div class="details-actions">
+                    <button class="action-icon-btn like-btn" data-id="<%= body.post._id %>" id="singlePostLikeBtn">
+                        <i class="bi <%= body.post.isLiked ? 'bi-heart-fill text-danger' : 'bi-heart' %>"></i>
+                    </button>
+                    <button class="action-icon-btn" onclick="document.getElementById('commentInput').focus()">
+                        <i class="bi bi-chat"></i>
+                    </button>
+                    <button class="action-icon-btn">
+                        <i class="bi bi-send"></i>
+                    </button>
+                    <button class="action-icon-btn ms-auto">
+                        <i class="bi bi-bookmark"></i>
+                    </button>
+                </div>
+
+                <div class="likes-count-bold" id="singlePostLikesCount">
+                    <%= body.post.likesCount || 0 %> likes
+                </div>
+
+                <div class="post-timestamp-muted">
+                    <%= new Date(body.post.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }) %>
+                </div>
+
+                <hr class="my-2 opacity-10">
+
+                <form id="commentForm" class="d-flex align-items-center">
+                    <input type="text" id="commentInput" class="form-control border-0 shadow-none ps-0" placeholder="Add a comment..." style="font-size: 14px;">
+                    <button type="submit" class="btn btn-link text-primary fw-bold text-decoration-none p-0 border-0 shadow-none opacity-50" id="postCommentBtn" disabled>Post</button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    // Use theme background for this page
+    document.addEventListener("DOMContentLoaded", () => {
+        const mainContent = document.querySelector('main.main-content');
+        if (mainContent) {
+            mainContent.style.minHeight = "100vh";
+        }
+    });
+</script>
+
+<%- include('partials/footer', {footer}) %>

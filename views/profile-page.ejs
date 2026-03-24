@@ -1,0 +1,115 @@
+<%- include('partials/header', {header}) %>
+<div class="profile-page-container">
+
+  <div class="profile-cover-wrapper">
+
+    <div class="profile-cover" style="background-image: url('<%= body.profile?.coverPhoto  %>');">
+    </div>
+
+    <div class="profile-picture-wrapper">
+      <img src="<%= body.profile?.profilePicture || '/images/default-avatar.png' %>" class="profile-picture1" alt="Profile Picture">
+    </div>
+
+    <div class="profile-identity-under">
+      <h5 class="fw-bold mb-0"><%= body.profileUser?.fullname || "User Name" %></h5>
+      <p class="profile-username mb-0">@<%= body.profileUser?.username || "username" %></p>
+    </div>
+
+  </div>
+
+  <div class="profile-info-section">
+
+    <div class="profile-actions d-flex justify-content-center">
+      <% if (body.viewType === "owner") { %>
+      <a href="/profile/edit/<%- body.profileUser._id %>" class="btn btn-primary px-4">Edit Profile</a>
+      <% } else if (body.viewType === "public") { %>
+      <button class="btn btn-primary-custom px-4" id="followBtn" data-id="<%= body.profileUser._id %>" data-following="<%= body.isFollower ? 'true' : 'false' %>" data-requested="false">
+        <%= body.isFollower ? 'Unfollow' : 'Follow' %>
+      </button>
+      <% } else if (body.viewType === "private") { %>
+      <button class="btn btn-primary-custom px-4" id="followBtn" data-id="<%= body.profileUser._id %>" data-following="<%= body.isFollower ? 'true' : 'false' %>" data-requested="<%= body.isRequested ? 'true' : 'false' %>">
+        <%= body.isFollower ? 'Unfollow' : body.isRequested ? 'Requested' : 'Follow' %>
+      </button>
+      <% } %>
+    </div>
+
+    <div class="profile-stats" data-private="<%= body.profileUser.accountMeta?.isPrivate ? 'true' : 'false' %>" data-userid="<%= body.profileUser._id %>">
+      <% if(!body.profileUser.accountMeta?.isPrivate || body.viewType === "owner" || body.isFollower) { %>
+      <a href="/profile/<%= body.profileUser._id %>/connections?type=followers" class="stat-item">
+        <strong id="followersCount"><%= body.followersCount || 0 %></strong>
+        <span>Followers</span>
+      </a>
+      <a href="/profile/<%= body.profileUser._id %>/connections?type=following" class="stat-item">
+        <strong id="followingCount"><%= body.followingCount || 0 %></strong>
+        <span>Following</span>
+      </a>
+      <% } else { %>
+      <div class="stat-item">
+        <strong><%= body.followersCount || 0 %></strong>
+        <span>Followers</span>
+      </div>
+      <div class="stat-item">
+        <strong><%= body.followingCount || 0 %></strong>
+        <span>Following</span>
+      </div>
+      <% } %>
+    </div>
+
+
+    <% if (body.profile?.bio) { %>
+    <div class="profile-bio-section">
+      <p class="profile-bio">
+        <%= body.profile.bio %>
+      </p>
+    </div>
+    <% } %>
+
+  </div>
+
+
+  <div class="profile-posts">
+    <div class="d-flex justify-content-center align-items-center mb-4 gap-3" id="postsSection">
+      <% if (body.viewType === 'owner') { %>
+        <div class="dropdown">
+          <button class="btn btn-outline-primary-custom dropdown-toggle fw-bold px-4 rounded-pill" type="button" id="postTypeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            Posts
+          </button>
+          <ul class="dropdown-menu border-0 shadow-sm rounded-3" aria-labelledby="postTypeDropdown">
+            <li><a class="dropdown-item active" href="#" data-type="posts">Posts</a></li>
+            <li><a class="dropdown-item" href="#" data-type="drafts">Drafts</a></li>
+            <li><a class="dropdown-item" href="#" data-type="scheduled">Scheduled</a></li>
+          </ul>
+        </div>
+      <% } else { %>
+        <h5 class="text-primary-custom text-center mb-0">Posts</h5>
+      <% } %>
+    </div>
+
+    <div class="posts-grid-container" id="postsGridContainer">
+      <div class="row g-2" id="postsGrid">
+        <% if (!body.profileUser.accountMeta?.isPrivate || body.viewType === 'owner' || body.isFollower) { %>
+          <div class="col-12 text-center py-5 empty-posts">
+            <i class="bi bi-image text-primary-custom display-4"></i>
+            <p class="mt-2 text-muted">No posts yet</p>
+          </div>
+        <% } else { %>
+          <div class="col-12 text-center py-5 empty-posts">
+            <i class="bi bi-lock text-primary-custom display-4"></i>
+            <p class="mt-2 text-muted">This profile is private</p>
+          </div>
+        <% } %>
+      </div>
+      <div class="posts-loader" id="postsLoader">
+        <div class="spinner"></div>
+        <p>Loading posts...</p>
+      </div>
+      <div class="no-more-posts" id="noMorePosts">
+        <p>No more posts</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Single Post Modal removed as we use dedicated page `/p/:postId` -->
+</div>
+
+<%- include("partials/footer", {footer}) %>
