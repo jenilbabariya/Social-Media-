@@ -1,16 +1,16 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const feedPostsContainer = document.getElementById("feedPosts");
-    const feedLoader = document.getElementById("feedLoader");
-    const noMoreFeedPosts = document.getElementById("noMoreFeedPosts");
+    const bookmarkPostsContainer = document.getElementById("bookmarkPosts");
+    const bookmarkLoader = document.getElementById("bookmarkLoader");
+    const noMoreBookmarkPosts = document.getElementById("noMoreBookmarkPosts");
 
-    if (!feedPostsContainer) return;
+    if (!bookmarkPostsContainer) return;
 
     let currentPage = 1;
     const postsPerPage = 5;
     let isLoading = false;
     let allPostsLoaded = false;
 
-    // Time formatting helper (e.g., "2 HOURS AGO", "1 DAY AGO")
+    // Time formatting helper
     const formatTimeAgo = (dateString) => {
         const date = new Date(dateString);
         const now = new Date();
@@ -26,14 +26,12 @@ document.addEventListener("DOMContentLoaded", () => {
         return "JUST NOW";
     };
 
-    // Render a single post card
+    // Render a single post card (Reusing logic from dashboard.js)
     const renderPostCard = (post) => {
         const profilePicUrl = post.userProfilePic || "/images/default-avatar.png";
 
         let mediaHtml = "";
         if (post.media && post.media.length > 0) {
-            // Simplified: just render the first media item for now, or build a carousel
-            // Taking inspiration from the profile modal logic:
             if (post.media.length === 1) {
                 const item = post.media[0];
                 if (item.type === "image") {
@@ -42,7 +40,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     mediaHtml = `<video src="${item.url}" class="feed-media-item" controls loop muted autoplay></video>`;
                 }
             } else {
-                // Carousel implementation (reusing Bootstrap)
                 const carouselId = `carousel-${post._id}`;
                 const indicators = post.media.map((_, i) =>
                     `<button type="button" data-bs-target="#${carouselId}" data-bs-slide-to="${i}" class="${i === 0 ? 'active' : ''}"></button>`
@@ -88,7 +85,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <div class="feed-media-container">
                     ${mediaHtml}
                 </div>
-
+ 
                 <div class="feed-actions d-flex align-items-center">
                     <button class="feed-action-btn like-btn d-flex align-items-center me-3" data-id="${post._id}" style="border: none; background: none; padding: 0;">
                         <i class="bi ${post.isLiked ? 'bi-heart-fill text-danger' : 'bi-heart'}" style="font-size: 24px;"></i>
@@ -102,7 +99,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         <i class="bi bi-send"></i>
                     </button>
                     <button class="feed-action-btn bookmark-btn ms-auto" data-id="${post._id}">
-                        <i class="bi ${post.isBookmarked ? 'bi-bookmark-fill' : 'bi-bookmark'}" style="font-size: 24px;"></i>
+                        <i class="bi ${post.isBookmarked ? 'bi-bookmark-fill' : 'bi-bookmark'}"></i>
                     </button>
                 </div>
 
@@ -110,15 +107,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     <a href="/profile/${post.user.username}" class="feed-caption-username">${post.user.username}</a>
                     <span class="feed-caption-text">${post.caption}</span>
                 </div>
-
-                ${post.topComments ? post.topComments.map(c => `
-                    <div class="feed-top-comment my-1 px-3">
-                        <a href="/profile/${c.user.username}" class="text-decoration-none text-dark" style="font-weight: 500;">${c.user.username}</a>
-                        <span class="ms-1">${c.text}</span>
-                    </div>
-                `).join('') : ''}
-
-                ${post.commentsCount > 2 ? `<a href="/p/${post._id}" class="feed-comments-link d-block mt-1 text-muted text-decoration-none px-3">View all ${post.commentsCount} comments</a>` : ""}
                 
                 <div class="feed-timestamp">
                     ${formatTimeAgo(post.createdAt)}
@@ -131,15 +119,14 @@ document.addEventListener("DOMContentLoaded", () => {
         return template.content.firstChild;
     };
 
-    // Fetch posts function
-    const fetchFeedPosts = async (page = 1) => {
+    const fetchBookmarks = async (page = 1) => {
         if (isLoading || allPostsLoaded) return;
 
         isLoading = true;
-        feedLoader.classList.add("active");
+        bookmarkLoader.classList.add("active");
 
         try {
-            const res = await fetch(`/api/feed?page=${page}&limit=${postsPerPage}`);
+            const res = await fetch(`/api/posts/bookmarks?page=${page}&limit=${postsPerPage}`);
             if (!res.ok) throw new Error("Failed to fetch");
 
             const data = await res.json();
@@ -150,122 +137,96 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (posts.length === 0) {
                     allPostsLoaded = true;
                     if (page === 1) {
-                        feedPostsContainer.innerHTML = `
+                        bookmarkPostsContainer.innerHTML = `
                             <div class="text-center text-muted mt-5 mb-5 p-5">
-                                <i class="bi bi-camera" style="font-size: 3rem;"></i>
-                                <h4 class="mt-3">Welcome to your feed!</h4>
-                                <p>Follow users to see their latest posts here.</p>
-                                <a href="/create-post" class="btn btn-primary mt-2">Create a Post</a>
+                                <i class="bi bi-bookmark" style="font-size: 3rem;"></i>
+                                <h4 class="mt-3">No Bookmarks Yet</h4>
+                                <p>Saved posts will appear here.</p>
                             </div>
                         `;
-                        feedLoader.classList.remove("active");
-                        noMoreFeedPosts.classList.remove("active");
+                        bookmarkLoader.classList.remove("active");
+                        noMoreBookmarkPosts.classList.remove("active");
                     } else {
-                        noMoreFeedPosts.classList.add("active");
+                        noMoreBookmarkPosts.classList.add("active");
                     }
                 } else {
-                    // Append posts
                     posts.forEach(post => {
                         const card = renderPostCard(post);
-                        feedPostsContainer.appendChild(card);
-
-                        // Join the post room for real-time updates
-                        if (window.joinPostRoom) {
-                            window.joinPostRoom(post._id);
-                        }
+                        bookmarkPostsContainer.appendChild(card);
                     });
-
-                    // One-time listener for feed updates
-                    if (window.socket && !window.feedSocketInitialized) {
-                        window.feedSocketInitialized = true;
-                        
-                        window.socket.on("post:liked", (data) => {
-                            const likesCountElement = document.getElementById(`likes-count-${data.postId || data.post}`);
-                            if (likesCountElement) {
-                                likesCountElement.textContent = `${data.likesCount} likes`;
-                            }
-                        });
-
-                        window.socket.on("post:unliked", (data) => {
-                            const likesCountElement = document.getElementById(`likes-count-${data.postId || data.post}`);
-                            if (likesCountElement) {
-                                likesCountElement.textContent = `${data.likesCount} likes`;
-                            }
-                        });
-                    }
-
 
                     if (posts.length < postsPerPage) {
                         allPostsLoaded = true;
-                        noMoreFeedPosts.classList.add("active");
+                        noMoreBookmarkPosts.classList.add("active");
                     }
                 }
-            } else {
-                console.error("Error from API:", data.msg);
-                showToast && showToast("Failed to load feed", "danger");
             }
         } catch (error) {
-            console.error("Error fetching feed:", error);
-            showToast && showToast("Network error. Please try again.", "danger");
+            console.error("Error fetching bookmarks:", error);
         } finally {
             isLoading = false;
-            feedLoader.classList.remove("active");
-            if (allPostsLoaded && page > 1) {
-                // Show the 'no more posts' indicator
-                noMoreFeedPosts.classList.add("active");
-            }
+            bookmarkLoader.classList.remove("active");
         }
     };
 
-    // Infinite Scroll Implementation
     const setupInfiniteScroll = () => {
         let scrollTicking = false;
-
         window.addEventListener("scroll", () => {
             if (scrollTicking || isLoading || allPostsLoaded) return;
-
             scrollTicking = true;
             requestAnimationFrame(() => {
                 const scrollTop = window.scrollY;
                 const docHeight = document.documentElement.scrollHeight;
                 const winHeight = window.innerHeight;
-                const scrollPercent = (scrollTop + winHeight) / docHeight;
-
-                // Load more when user scrolls past 80% marks
-                if (scrollPercent >= 0.8) {
+                if ((scrollTop + winHeight) / docHeight >= 0.8) {
                     currentPage++;
-                    fetchFeedPosts(currentPage);
+                    fetchBookmarks(currentPage);
                 }
                 scrollTicking = false;
             });
         });
     };
 
-    // Initialize
-    fetchFeedPosts(1);
+    fetchBookmarks(1);
     setupInfiniteScroll();
 
-    feedPostsContainer.addEventListener("click", async (e) => {
+    bookmarkPostsContainer.addEventListener("click", async (e) => {
+        const bookmarkBtn = e.target.closest(".bookmark-btn");
+        if (bookmarkBtn) {
+            const postId = bookmarkBtn.dataset.id;
+            const icon = bookmarkBtn.querySelector("i");
+            try {
+                const res = await fetch(`/api/posts/bookmark/${postId}`, { method: "POST" });
+                const data = await res.json();
+                if (data.flag === 1) {
+                    if (data.data.isBookmarked) {
+                        icon.classList.replace("bi-bookmark", "bi-bookmark-fill");
+                    } else {
+                        icon.classList.replace("bi-bookmark-fill", "bi-bookmark");
+                        // Optional: remove post from view if unbookmarked on bookmarks page
+                        const postCard = document.getElementById(`post-${postId}`);
+                        if (postCard) postCard.remove();
+                        if (bookmarkPostsContainer.children.length === 0) {
+                            allPostsLoaded = false;
+                            fetchBookmarks(1);
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error("Bookmark error:", error);
+            }
+        }
+
         const likeBtn = e.target.closest(".like-btn");
         if (likeBtn) {
-            e.preventDefault();
             const postId = likeBtn.dataset.id;
             const icon = likeBtn.querySelector("i");
             const likesCountElement = document.getElementById(`likes-count-${postId}`);
-
             try {
-                const res = await fetch(`/api/posts/like/${postId}`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" }
-                });
-
-                if (!res.ok) throw new Error("Failed to toggle like");
-
+                const res = await fetch(`/api/posts/like/${postId}`, { method: "POST" });
                 const data = await res.json();
                 if (data.flag === 1) {
                     const { likesCount, isLiked } = data.data;
-
-                    // Update Icon
                     if (isLiked) {
                         icon.classList.replace("bi-heart", "bi-heart-fill");
                         icon.classList.add("text-danger");
@@ -273,45 +234,10 @@ document.addEventListener("DOMContentLoaded", () => {
                         icon.classList.replace("bi-heart-fill", "bi-heart");
                         icon.classList.remove("text-danger");
                     }
-
-                    // Update Count
-                    if (likesCountElement) {
-                        likesCountElement.textContent = `${likesCount} likes`;
-                    }
+                    if (likesCountElement) likesCountElement.textContent = likesCount;
                 }
             } catch (error) {
-                console.error("Like Error:", error);
-                // showToast && showToast("Error liking post", "danger");
-            }
-        }
-
-        const bookmarkBtn = e.target.closest(".bookmark-btn");
-        if (bookmarkBtn) {
-            e.preventDefault();
-            const postId = bookmarkBtn.dataset.id;
-            const icon = bookmarkBtn.querySelector("i");
-
-            try {
-                const res = await fetch(`/api/posts/bookmark/${postId}`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" }
-                });
-
-                if (!res.ok) throw new Error("Failed to toggle bookmark");
-
-                const data = await res.json();
-                if (data.flag === 1) {
-                    const { isBookmarked } = data.data;
-
-                    // Update Icon
-                    if (isBookmarked) {
-                        icon.classList.replace("bi-bookmark", "bi-bookmark-fill");
-                    } else {
-                        icon.classList.replace("bi-bookmark-fill", "bi-bookmark");
-                    }
-                }
-            } catch (error) {
-                console.error("Bookmark Error:", error);
+                console.error("Like error:", error);
             }
         }
     });

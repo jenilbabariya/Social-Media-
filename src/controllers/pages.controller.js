@@ -247,4 +247,26 @@ export const renderSearchPage = async (req, res) => {
   }
 };
 
+export const renderBookmarksPage = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+
+    res.render("bookmarks.ejs", {
+      header: {
+        title: "Bookmarks | SocialMedia",
+        css: []
+      },
+      body: {
+        user
+      },
+      footer: {
+        js: ["bookmarks"]
+      }
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json(errorResponse("Server error"));
+  }
+};
+
 

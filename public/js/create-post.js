@@ -268,12 +268,12 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         const isScheduled = scheduleSwitch.checked;
-        let endpoint = isEdit ? `/post/edit/${postId}` : "/post/create";
+        let endpoint = isEdit ? `/api/posts/edit/${postId}` : "/api/posts/create";
         let method = isEdit ? "PUT" : "POST";
 
         // Determine endpoint
         if (isDraft) {
-            endpoint = isEdit ? `/post/edit/${postId}?status=draft` : "/post/draft";
+            endpoint = isEdit ? `/api/posts/edit/${postId}?status=draft` : "/api/posts/draft";
             // Check if we need a specific 'update draft' route, assuming editPost handles it via status
         }
 
@@ -288,7 +288,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 showToast("Please select a time in 5-minute intervals.", "danger");
                 return;
             }
-            endpoint = isEdit ? `/post/edit/${postId}?status=scheduled` : "/post/schedule";
+            endpoint = isEdit ? `/api/posts/edit/${postId}?status=scheduled` : "/api/posts/schedule";
         }
 
         // Send Request

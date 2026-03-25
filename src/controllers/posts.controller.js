@@ -3,6 +3,7 @@ import { Follow, User, Profile } from "../models/user.model.js";
 import Like from "../models/like.model.js";
 import Notification from "../models/notifications.model.js";
 import { Comment } from "../models/comment.model.js";
+import Bookmark from "../models/bookmark.model.js";
 import { errorResponse, successResponse } from "../lib/general.js";
 import { getIO } from "../config/socket.js";
 
@@ -133,9 +134,10 @@ export const getPost = async (req, res) => {
             .populate("user", "username");
 
         const isLiked = await Like.exists({ user: userId, post: postId });
+        const isBookmarked = await Bookmark.exists({ user: userId, posts: postId });
 
         res.status(200).json(successResponse("Post fetched successfully", {
-            post: { ...post.toObject(), isLiked: !!isLiked }
+            post: { ...post.toObject(), isLiked: !!isLiked, isBookmarked: !!isBookmarked }
         }));
 
     } catch (error) {
@@ -172,9 +174,13 @@ export const getUserPosts = async (req, res) => {
         const userLikes = await Like.find({ user: userId, post: { $in: postIds } }).select("post");
         const likedPostIds = new Set(userLikes.map(l => l.post.toString()));
 
+        const bookmark = await Bookmark.findOne({ user: userId });
+        const bookmarkedPostIds = new Set(bookmark ? bookmark.posts.map(id => id.toString()) : []);
+
         const formattedPosts = posts.map(p => {
             const pObj = p.toObject();
             pObj.isLiked = likedPostIds.has(pObj._id.toString());
+            pObj.isBookmarked = bookmarkedPostIds.has(pObj._id.toString());
             return pObj;
         });
 
@@ -686,6 +692,111 @@ export const addReply = async (req, res) => {
 
     } catch (error) {
         console.error("Add Reply Error:", error);
+        res.status(500).json(errorResponse("Server error"));
+    }
+};
+
+export const toggleBookmark = async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const { postId } = req.params;
+
+        const post = await Post.findById(postId);
+        if (!post) {
+            return res.status(404).json(errorResponse("Post not found"));
+        }
+
+        let bookmark = await Bookmark.findOne({ user: userId });
+
+        if (!bookmark) {
+            bookmark = await Bookmark.create({ user: userId, posts: [postId] });
+            return res.status(200).json(successResponse("Post bookmarked", { isBookmarked: true }));
+        }
+
+        const postIndex = bookmark.posts.indexOf(postId);
+        let isBookmarked = false;
+
+        if (postIndex > -1) {
+            // Remove from bookmarks
+            bookmark.posts.splice(postIndex, 1);
+            isBookmarked = false;
+        } else {
+            // Add to bookmarks
+            bookmark.posts.push(postId);
+            isBookmarked = true;
+        }
+
+        await bookmark.save();
+        res.status(200).json(successResponse(isBookmarked ? "Post bookmarked" : "Post unbookmarked", { isBookmarked }));
+
+    } catch (error) {
+        console.error("Toggle Bookmark Error:", error);
+        res.status(500).json(errorResponse("Server error"));
+    }
+};
+
+export const getBookmarkedPosts = async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
+
+        const bookmark = await Bookmark.findOne({ user: userId });
+        if (!bookmark || bookmark.posts.length === 0) {
+            return res.status(200).json(successResponse("No bookmarks found", {
+                posts: [],
+                page,
+                limit,
+                total: 0,
+                totalPages: 0,
+            }));
+        }
+
+        const total = bookmark.posts.length;
+        // Paginate the array of IDs manually or use $in with sort/limit
+        // However, bookmark.posts is just an array of IDs. 
+        // We want the posts in the order they were bookmarked (or reverse)?
+        // The array order is usually sufficient.
+        const postIds = bookmark.posts.slice().reverse().slice(skip, skip + limit);
+
+        const posts = await Post.find({ _id: { $in: postIds } })
+            .populate("user", "username fullname");
+
+        // Fetch user profiles for profile pictures
+        const postUserIds = posts.map(p => p.user._id);
+        const profiles = await Profile.find({ userId: { $in: postUserIds } }, "userId profilePicture");
+        const profileMap = {};
+        profiles.forEach(p => profileMap[p.userId.toString()] = p.profilePicture);
+
+        // Check likes and bookmarks for these posts
+        const userLikes = await Like.find({ user: userId, post: { $in: postIds } }).select("post");
+        const likedPostIds = new Set(userLikes.map(l => l.post.toString()));
+
+        const formattedPosts = posts.map(p => {
+            const pObj = p.toObject();
+            pObj.userProfilePic = profileMap[pObj.user._id.toString()] || null;
+            pObj.isLiked = likedPostIds.has(pObj._id.toString());
+            pObj.isBookmarked = true; // Since they are from the bookmark collection
+            return pObj;
+        });
+
+        // Re-sort to maintain the "bookmarked order" if needed, 
+        // because Post.find order is not guaranteed to match postIds order.
+        formattedPosts.sort((a, b) => {
+            return postIds.indexOf(b._id.toString()) - postIds.indexOf(a._id.toString());
+        });
+
+        res.status(200).json(successResponse("Bookmarked posts fetched successfully", {
+            posts: formattedPosts,
+            page,
+            limit,
+            total,
+            totalPages: Math.ceil(total / limit),
+        }));
+
+    } catch (error) {
+        console.error("Get Bookmarked Posts Error:", error);
         res.status(500).json(errorResponse("Server error"));
     }
 };

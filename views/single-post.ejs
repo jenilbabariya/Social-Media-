@@ -105,8 +105,8 @@
                     <button class="action-icon-btn">
                         <i class="bi bi-send"></i>
                     </button>
-                    <button class="action-icon-btn ms-auto">
-                        <i class="bi bi-bookmark"></i>
+                    <button class="action-icon-btn ms-auto bookmark-btn" data-id="<%= body.post._id %>" id="singlePostBookmarkBtn">
+                        <i class="bi <%= body.post.isBookmarked ? 'bi-bookmark-fill' : 'bi-bookmark' %>"></i>
                     </button>
                 </div>
 

@@ -33,12 +33,12 @@ document.addEventListener("DOMContentLoaded", () => {
         if (noMorePosts) noMorePosts.classList.remove("active");
 
         const username = window.location.pathname.split("/").pop();
-        let url = `/post/user/${username}`;
+        let url = `/api/posts/user/${username}`;
 
         if (currentPostType === "drafts") {
-            url = `/post/drafts`;
+            url = `/api/posts/drafts`;
         } else if (currentPostType === "scheduled") {
-            url = `/post/scheduled`;
+            url = `/api/posts/scheduled`;
         }
 
         // Add pagination params

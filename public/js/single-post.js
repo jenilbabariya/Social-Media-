@@ -343,5 +343,31 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
+
+    const bookmarkBtn = document.getElementById("singlePostBookmarkBtn");
+    if (bookmarkBtn) {
+        bookmarkBtn.addEventListener("click", async (e) => {
+            e.preventDefault();
+            const icon = bookmarkBtn.querySelector("i");
+            try {
+                const res = await fetch(`/api/posts/bookmark/${postId}`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" }
+                });
+                if (!res.ok) throw new Error("Failed to toggle bookmark");
+                const data = await res.json();
+                if (data.flag === 1) {
+                    const { isBookmarked } = data.data;
+                    if (isBookmarked) {
+                        icon.classList.replace("bi-bookmark", "bi-bookmark-fill");
+                    } else {
+                        icon.classList.replace("bi-bookmark-fill", "bi-bookmark");
+                    }
+                }
+            } catch (error) {
+                console.error("Bookmark Error:", error);
+            }
+        });
+    }
 });
 

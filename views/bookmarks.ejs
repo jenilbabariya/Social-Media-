@@ -1,0 +1,28 @@
+<%- include('partials/header', {header}) %>
+
+<div class="feed-page-container">
+  <div class="feed-container mx-auto" style="max-width: 600px;">
+    
+    <div class="bookmarks-header mb-4">
+        <h2 class="fw-bold" style="font-size: 24px;">Bookmarks</h2>
+        <hr>
+    </div>
+
+    <!-- Feed Posts Container -->
+    <div id="bookmarkPosts" class="feed-posts">
+      <!-- Posts will be injected here by bookmarks.js -->
+    </div>
+
+    <!-- Loading Spinner & End of Feed Indicator -->
+    <div class="posts-loader" id="bookmarkLoader">
+      <div class="spinner"></div>
+      <p>Loading bookmarks...</p>
+    </div>
+    
+    <div class="no-more-posts" id="noMoreBookmarkPosts">
+      <p>No more bookmarks to show.</p>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer', {footer: {js: ['bookmarks']}}) %>

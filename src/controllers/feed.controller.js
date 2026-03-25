@@ -2,6 +2,7 @@ import Post from "../models/post.model.js";
 import { User, Profile, Follow } from "../models/user.model.js";
 import Like from "../models/like.model.js";
 import { Comment } from "../models/comment.model.js";
+import Bookmark from "../models/bookmark.model.js";
 import { errorResponse, successResponse } from "../lib/general.js";
 
 export const getFeedPosts = async (req, res) => {
@@ -54,7 +55,11 @@ export const getFeedPosts = async (req, res) => {
             profilePicMap[p.userId.toString()] = p.profilePicture;
         });
 
-        // 5. Check which posts the current user has liked
+        // 5. Fetch bookmarks for current user
+        const bookmark = await Bookmark.findOne({ user: currentUserId });
+        const bookmarkedPostIds = new Set(bookmark ? bookmark.posts.map(id => id.toString()) : []);
+
+        // 6. Check which posts the current user has liked
         const postIds = posts.map(post => post._id);
         const userLikes = await Like.find({ user: currentUserId, post: { $in: postIds } }).select("post");
         const likedPostIds = new Set(userLikes.map(l => l.post.toString()));
@@ -64,6 +69,7 @@ export const getFeedPosts = async (req, res) => {
             const postObj = post.toObject();
             postObj.userProfilePic = profilePicMap[postObj.user._id.toString()] || null;
             postObj.isLiked = likedPostIds.has(postObj._id.toString());
+            postObj.isBookmarked = bookmarkedPostIds.has(postObj._id.toString());
             
             // Format comments
             const postComments = commentsResults[index].map(c => {

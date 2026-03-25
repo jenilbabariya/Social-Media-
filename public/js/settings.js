@@ -10,6 +10,13 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    const bookmarksBtn = document.getElementById("bookmarks");
+    if (bookmarksBtn) {
+        bookmarksBtn.addEventListener("click", function () {
+            window.location.href = "/bookmarks";
+        });
+    }
+
     if (privacyToggle) {
         privacyToggle.addEventListener("change", async function () {
             try {
