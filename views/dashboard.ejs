@@ -1,7 +1,21 @@
 <%- include('partials/header', {header}) %>
 
-<div class="feed-page-container">
+<div class="feed-page-container" data-user-id="<%= body.currentUser._id %>" data-username="<%= body.currentUser.username %>">
   <div class="feed-container mx-auto" style="max-width: 600px;">
+    <!-- Stories Tray -->
+    <div id="storiesTray" class="stories-tray">
+      <!-- Current User Story / Add Story -->
+      <div class="story-item" id="addStoryBtn">
+        <div class="story-avatar-wrapper no-stories" id="currentUserStoryWrapper">
+          <img src="<%= body.currentUser.profilePicture || '/images/default-avatar.png' %>" alt="My Story">
+          <a href="/create-story" class="add-story-icon"><i class="bi bi-plus-lg"></i></a>
+        </div>
+        <span class="story-username">Your Story</span>
+      </div>
+      <div class="story-tray-divider"></div>
+      <!-- Other stories will be injected here by story-viewer.js -->
+    </div>
+
     <!-- Feed Posts Container -->
     <div id="feedPosts" class="feed-posts">
       <!-- Posts will be injected here by dashboard.js -->
@@ -19,4 +33,5 @@
   </div>
 </div>
 
+<%- include('partials/story-viewer') %>
 <%- include('partials/footer', {footer: {js: ['dashboard']}}) %>

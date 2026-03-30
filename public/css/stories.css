@@ -1,0 +1,347 @@
+/* Story Tray on Dashboard */
+.stories-tray {
+    display: flex;
+    overflow-x: auto;
+    padding: 16px 8px;
+    gap: 12px;
+    scrollbar-width: none;
+    background: white;
+    border: 1px solid #dbdbdb;
+    border-radius: 8px;
+    margin-bottom: 24px;
+    -ms-overflow-style: none;
+}
+.stories-tray::-webkit-scrollbar { display: none; }
+
+.story-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    min-width: 74px;
+    transition: transform 0.1s ease;
+}
+
+.story-item:active {
+    transform: scale(0.95);
+}
+
+.story-avatar-wrapper {
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    position: relative;
+    padding: 2px;
+    background: rgba(22, 162, 244, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.story-avatar-wrapper.viewed {
+    background: #dbdbdb;
+}
+
+.story-avatar-wrapper.no-stories {
+    background: #dbdbdb;
+}
+
+.story-avatar-wrapper img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 2px solid white;
+    object-fit: cover;
+}
+
+/* Removed border: none override to keep consistency */
+
+.story-username {
+    font-size: 12px;
+    color: #262626;
+    max-width: 75px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Story Tray Divider */
+.story-tray-divider {
+    width: 1px;
+    height: 62px;
+    background-color: #dbdbdb;
+    margin: 0 4px;
+    align-self: center;
+}
+
+/* Story Viewer Overlay */
+.story-viewer-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 9999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.story-viewer-overlay.active {
+    display: flex;
+}
+
+.story-viewer-container {
+    width: 100%;
+    max-width: 450px;
+    height: 100vh;
+    max-height: 800px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+@media (max-width: 576px) {
+    .story-viewer-container {
+        height: 100vh;
+        max-height: none;
+    }
+}
+
+/* Progress Bars */
+.story-progress-container {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    display: flex;
+    gap: 5px;
+    z-index: 10;
+}
+
+.progress-bar-bg {
+    flex: 1;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: white;
+    width: 0%;
+    transition: width linear;
+}
+
+/* Story Header */
+.story-header {
+    position: absolute;
+    top: 25px;
+    left: 15px;
+    right: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 10;
+}
+
+.story-user-img {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.story-user-name {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.story-close {
+    margin-left: auto;
+    cursor: pointer;
+    font-size: 24px;
+    background: none;
+    border: none;
+    color: white;
+    padding: 5px;
+}
+
+/* Story Content */
+.story-content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #000;
+}
+
+.story-content img, .story-content video {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+/* Navigation Overlays */
+.story-nav {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 30%;
+    z-index: 5;
+    cursor: pointer;
+}
+
+.story-nav-prev { left: 0; }
+.story-nav-next { right: 0; }
+
+/* Add Story Plus Icon */
+.add-story-icon {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    background: #0095f6;
+    color: white;
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    border: 3px solid white;
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.05);
+}
+
+.add-story-icon i {
+    font-weight: bold;
+}
+
+/* Story Viewer Footer (Viewers Count) */
+.story-footer {
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    z-index: 10;
+}
+
+.story-viewer-count {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.story-viewer-count:hover {
+    background: rgba(0, 0, 0, 0.6);
+}
+
+.story-viewer-count i {
+    font-size: 14px;
+}
+
+.story-viewer-count span {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+/* Viewers List Overlay (Bottom Sheet) */
+.viewers-list-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 50%;
+    background: white;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    transform: translateY(100%);
+    transition: transform 0.3s ease-out;
+    color: #262626;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    box-shadow: 0 -5px 15px rgba(0,0,0,0.2);
+}
+
+.viewers-list-overlay.active {
+    transform: translateY(0);
+}
+
+.viewers-list-header {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid #dbdbdb;
+}
+
+.viewers-list-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    flex: 1;
+    text-align: center;
+}
+
+.close-viewers-list {
+    background: none;
+    border: none;
+    font-size: 24px;
+    padding: 0;
+    cursor: pointer;
+    color: #262626;
+}
+
+.viewers-list-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 0;
+}
+
+.viewer-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 16px;
+    text-decoration: none;
+    color: inherit;
+    transition: background 0.1s;
+}
+
+.viewer-item:hover {
+    background-color: #fafafa;
+}
+
+.viewer-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 12px;
+}
+
+.viewer-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.viewer-username {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.viewer-fullname {
+    font-size: 14px;
+    color: #8e8e8e;
+}

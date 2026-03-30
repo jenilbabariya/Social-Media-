@@ -1,0 +1,52 @@
+<!-- Story Viewer Overlay -->
+<div id="storyViewer" class="story-viewer-overlay">
+    <div class="story-viewer-container">
+        <!-- Progress Bars -->
+        <div id="storyProgressContainer" class="story-progress-container">
+            <!-- Progress bars will be injected here -->
+        </div>
+
+        <!-- Header -->
+        <div class="story-header text-white">
+            <img id="storyUserImg" src="" alt="User" class="story-user-img">
+            <span id="storyUserName" class="story-user-name"></span>
+            <span id="storyTime" class="story-time small opacity-75 ms-2"></span>
+            <button id="closeStoryViewer" class="story-close">&times;</button>
+        </div>
+
+        <!-- Content -->
+        <div class="story-content">
+            <img id="storyMediaImg" src="" alt="Story Media" class="d-none">
+            <video id="storyMediaVid" src="" class="d-none" playsinline></video>
+        </div>
+
+        <!-- Navigation -->
+        <div id="storyNavPrev" class="story-nav story-nav-prev"></div>
+        <div id="storyNavNext" class="story-nav story-nav-next"></div>
+
+        <!-- Footer (Viewer Count) -->
+        <div id="storyFooter" class="story-footer d-none">
+            <div id="viewersCountBtn" class="story-viewer-count">
+                <i class="bi bi-eye"></i>
+                <span id="viewerCountText">0 viewers</span>
+            </div>
+        </div>
+
+        <!-- Viewers List Overlay -->
+        <div id="viewersListOverlay" class="viewers-list-overlay">
+            <div class="viewers-list-header">
+                <h3>Viewers</h3>
+                <button id="closeViewersList" class="close-viewers-list">&times;</button>
+            </div>
+            <div id="viewersListContent" class="viewers-list-content">
+                <!-- Viewers will be injected here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Hidden Story Upload Form -->
+<form id="storyUploadForm" style="display: none;">
+    <input type="file" id="storyInput" name="storyMedia" accept="image/*">
+</form>
+<script src="/js/story-viewer.js"></script>

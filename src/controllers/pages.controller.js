@@ -36,20 +36,20 @@ export const renderRegister = (req, res) => {
 export const renderdashboard = async (req, res) => {
 
   try {
-    const user = await User.findById(req.user._id);
+    const user = await User.findById(req.user._id).lean();
+    const profile = await Profile.findOne({ userId: req.user._id }, "profilePicture");
+    if (profile) user.profilePicture = profile.profilePicture;
 
     res.render("dashboard.ejs", {
-
       header: {
-        title: "Dashboard | SocialMedia"
+        title: "Dashboard | SocialMedia",
+        css: ["stories"]
       },
-
       body: {
-        user
+        currentUser: user
       },
-
       footer: {
-        js: []
+        js: ["dashboard"]
       }
     });
   } catch (err) {
@@ -227,7 +227,9 @@ export const renderSinglePost = async (req, res) => {
 
 export const renderSearchPage = async (req, res) => {
   try {
-    const user = await User.findById(req.user._id);
+    const user = await User.findById(req.user._id).lean();
+    const profile = await Profile.findOne({ userId: req.user._id }, "profilePicture");
+    if (profile) user.profilePicture = profile.profilePicture;
 
     res.render("search.ejs", {
       header: {
@@ -235,7 +237,7 @@ export const renderSearchPage = async (req, res) => {
         css: ["search"]
       },
       body: {
-        user
+        currentUser: user
       },
       footer: {
         js: ["search"]
@@ -249,7 +251,9 @@ export const renderSearchPage = async (req, res) => {
 
 export const renderBookmarksPage = async (req, res) => {
   try {
-    const user = await User.findById(req.user._id);
+    const user = await User.findById(req.user._id).lean();
+    const profile = await Profile.findOne({ userId: req.user._id }, "profilePicture");
+    if (profile) user.profilePicture = profile.profilePicture;
 
     res.render("bookmarks.ejs", {
       header: {
@@ -257,7 +261,7 @@ export const renderBookmarksPage = async (req, res) => {
         css: []
       },
       body: {
-        user
+        currentUser: user
       },
       footer: {
         js: ["bookmarks"]
@@ -267,6 +271,30 @@ export const renderBookmarksPage = async (req, res) => {
     console.error(err);
     res.status(500).json(errorResponse("Server error"));
   }
+};
+
+export const renderCreateStory = async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id).lean();
+        const profile = await Profile.findOne({ userId: req.user._id }, "profilePicture");
+        if (profile) user.profilePicture = profile.profilePicture;
+
+        res.render("create-story.ejs", {
+            header: {
+                title: "Create Story | SocialMedia",
+                css: ["create-story"]
+            },
+            body: {
+                currentUser: user
+            },
+            footer: {
+                js: ["create-story"]
+            }
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json(errorResponse("Server error"));
+    }
 };
 
 

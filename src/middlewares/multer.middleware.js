@@ -23,6 +23,8 @@ const storage = multer.diskStorage({
       } else {
         uploadDir = path.join(UPLOAD_PATH, "posts/videos");
       }
+    } else if (file.fieldname === "storyMedia") {
+      uploadDir = path.join(UPLOAD_PATH, "stories");
     }
 
     ensureDir(uploadDir);

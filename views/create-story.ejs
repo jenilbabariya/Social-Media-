@@ -1,0 +1,33 @@
+<%- include('partials/header', {header}) %>
+
+<div class="create-story-container mx-auto py-5" style="max-width: 500px;">
+    <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+        <div class="card-header bg-white border-bottom py-3 text-center">
+            <h5 class="mb-0 fw-bold">Create New Story</h5>
+        </div>
+        <div class="card-body p-4">
+            <div id="dropZone" class="story-drop-zone border-2 border-dashed rounded-4 d-flex flex-column align-items-center justify-content-center p-5 mb-4" style="height: 300px; cursor: pointer;">
+                <i class="bi bi-images text-primary mb-3" style="font-size: 3rem;"></i>
+                <p class="text-muted mb-0">Drag and drop or click to upload</p>
+                <input type="file" id="storyMediaInput" accept="image/*" class="d-none">
+            </div>
+
+            <div id="previewContainer" class="d-none mb-4 text-center">
+                <img id="storyPreview" src="" alt="Preview" class="img-fluid rounded-4 shadow-sm" style="max-height: 400px; object-fit: cover;">
+            </div>
+
+            <button id="publishStoryBtn" class="btn btn-primary w-100 rounded-pill py-2 fw-bold d-none">
+                Share to Story
+            </button>
+            
+            <div id="uploadLoader" class="text-center d-none py-3">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2 text-muted">Posting your story...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer', {footer}) %>
