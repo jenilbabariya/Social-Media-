@@ -51,6 +51,9 @@ body {
   border-radius: 8px;
   padding: 10px 14px;
   transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
 }
 
 .sidebar-link:hover {
@@ -62,6 +65,15 @@ body {
   background-color: rgba(22, 162, 244, 0.15);
   color: var(--bs-primary);
   font-weight: 600;
+}
+
+.sidebar-link i {
+  color: var(--bs-primary);
+  margin-right: 12px;
+}
+
+.sidebar-link:hover i {
+  transform: scale(1.1);
 }
 
 /* Sidebar notification count badge */
@@ -1268,4 +1280,102 @@ input[type="file"] {
   color: #8e8e8e;
   text-transform: uppercase;
   margin-bottom: 16px;
+}
+
+/* =======================
+   DASHBOARD MAIN LAYOUT
+   ======================= */
+
+.dashboard-main-layout {
+  display: flex;
+  justify-content: center;
+  max-width: 935px;
+  margin: 0 auto;
+  padding-top: 30px;
+}
+
+.feed-container {
+  width: 100%;
+  max-width: 630px;
+  flex-shrink: 0;
+}
+
+.suggestions-sidebar {
+  width: 319px;
+  margin-left: 32px;
+  flex-shrink: 0;
+}
+
+.suggestions-sticky-wrapper {
+  position: sticky;
+  top: 90px;
+}
+
+.suggestion-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #efefef;
+}
+
+.suggestion-row-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #efefef;
+}
+
+.suggestion-username {
+  font-size: 14px;
+  font-weight: 600;
+  color: #262626;
+  text-decoration: none;
+}
+
+.suggestion-fullname {
+  font-size: 14px;
+  color: #8e8e8e;
+  display: block;
+}
+
+.suggestion-row-username {
+  font-size: 14px;
+  font-weight: 600;
+  color: #262626;
+  text-decoration: none;
+}
+
+.suggestion-row-meta {
+  font-size: 12px;
+  color: #8e8e8e;
+  display: block;
+}
+
+.btn-follow-suggestion {
+  font-size: 12px;
+  font-weight: 600;
+  color: #0095f6;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.btn-follow-suggestion:hover {
+  color: #00376b;
+}
+
+.btn-follow-suggestion.following {
+  color: #262626;
+}
+
+@media (max-width: 991px) {
+  .dashboard-main-layout {
+    max-width: 600px;
+  }
+  .suggestions-sidebar {
+    display: none !important;
+  }
 }

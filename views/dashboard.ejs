@@ -1,7 +1,8 @@
 <%- include('partials/header', {header}) %>
 
 <div class="feed-page-container" data-user-id="<%= body.currentUser._id %>" data-username="<%= body.currentUser.username %>">
-  <div class="feed-container mx-auto" style="max-width: 600px;">
+  <div class="dashboard-main-layout">
+    <div class="feed-container">
     <!-- Stories Tray -->
     <div id="storiesTray" class="stories-tray">
       <!-- Current User Story / Add Story -->
@@ -27,10 +28,40 @@
       <p>Loading posts...</p>
     </div>
     
+
     <div class="no-more-posts" id="noMoreFeedPosts">
       <p>You're all caught up!</p>
     </div>
   </div>
+
+  <!-- Suggestions Sidebar -->
+  <aside class="suggestions-sidebar d-none d-lg-block">
+    <div class="suggestions-sticky-wrapper">
+      <div class="current-user-suggestion-header d-flex align-items-center mb-3">
+        <a href="/profile/<%= body.currentUser.username %>">
+          <img src="<%= body.currentUser.profilePicture || '/images/default-avatar.png' %>" alt="Profile" class="suggestion-avatar me-3">
+        </a>
+        <div class="flex-grow-1">
+          <a href="/profile/<%= body.currentUser.username %>" class="suggestion-username d-block"><%= body.currentUser.username %></a>
+          <span class="suggestion-fullname text-muted"><%= body.currentUser.fullname %></span>
+        </div>
+        <a href="/logout" class="text-primary text-decoration-none fw-600" style="font-size: 12px;">Switch</a>
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <span class="text-muted fw-600" style="font-size: 14px;">Suggestions for you</span>
+        <a href="/search" class="text-dark text-decoration-none fw-600" style="font-size: 12px;">See All</a>
+      </div>
+
+      <div id="suggestionsList" class="suggestions-list">
+        <!-- Suggestions will be injected here by dashboard.js -->
+        <div class="suggestions-loader py-3 text-center">
+          <div class="spinner-border spinner-border-sm text-muted" role="status"></div>
+        </div>
+      </div>
+    </div>
+  </aside>
+</div>
 </div>
 
 <%- include('partials/story-viewer') %>

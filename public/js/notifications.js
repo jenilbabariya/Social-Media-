@@ -157,14 +157,21 @@ document.addEventListener("DOMContentLoaded", () => {
         const profilePic = data.sender?.profilePicture || "/images/default-avatar.png";
         
         card.innerHTML = `
-            <div class="notif-avatar-wrapper">
-                <img src="${profilePic}" class="notif-avatar" alt="${data.sender?.username || 'User'}">
+            <div class="notification-avatar">
+                <img src="${profilePic}" alt="${data.sender?.username || 'User'}">
             </div>
-            <div class="notif-content">
-                <p class="notif-text">
-                    <span class="fw-bold">${data.sender?.username || "Someone"}</span> ${data.message}
+            <div class="notification-content">
+                <p class="notification-text">
+                    <span class="notification-username">@${data.sender?.username || "Someone"}</span> ${
+                        data.type === 'follow' ? 'started following you' :
+                        data.type === 'follow_accept' ? 'accepted your follow request' :
+                        data.type === 'like' ? 'liked your post' :
+                        data.type === 'comment' ? 'commented on your post' :
+                        data.type === 'mention' ? 'mentioned you in a post' :
+                        data.message
+                    }
                 </p>
-                <p class="notif-time">Just now</p>
+                <span class="notification-time">Just now</span>
             </div>
             <div class="notification-dot"></div>
         `;

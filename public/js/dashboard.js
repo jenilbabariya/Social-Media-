@@ -245,6 +245,84 @@ document.addEventListener("DOMContentLoaded", () => {
     fetchFeedPosts(1);
     setupInfiniteScroll();
 
+    // --- Suggestions Logic ---
+    const suggestionsList = document.getElementById("suggestionsList");
+
+    const fetchSuggestions = async () => {
+        if (!suggestionsList) return;
+
+        try {
+            const res = await fetch("/api/users/suggestions");
+            const data = await res.json();
+
+            if (data.flag === 1) {
+                renderSuggestions(data.data);
+            } else {
+                suggestionsList.innerHTML = '<p class="text-muted border-0 small py-2">No suggestions right now.</p>';
+            }
+        } catch (error) {
+            console.error("Fetch Suggestions Error:", error);
+            suggestionsList.innerHTML = '<p class="text-muted border-0 small py-2">Failed to load suggestions.</p>';
+        }
+    };
+
+    const renderSuggestions = (suggestions) => {
+        if (!suggestions || suggestions.length === 0) {
+            suggestionsList.innerHTML = '<p class="text-muted border-0 small py-2">No suggestions right now.</p>';
+            return;
+        }
+
+        suggestionsList.innerHTML = suggestions.map(user => `
+            <div class="suggestion-item d-flex align-items-center mb-3">
+                <a href="/profile/${user.username}">
+                    <img src="${user.profilePicture || '/images/default-avatar.png'}" alt="${user.username}" class="suggestion-row-avatar me-3">
+                </a>
+                <div class="flex-grow-1 overflow-hidden">
+                    <a href="/profile/${user.username}" class="suggestion-row-username d-block text-truncate text-decoration-none">${user.username}</a>
+                    <span class="suggestion-row-meta text-truncate">Suggested for you</span>
+                </div>
+                <button class="btn-follow-suggestion" data-id="${user._id}" data-username="${user.username}">Follow</button>
+            </div>
+        `).join("");
+    };
+
+    // Initial load of suggestions
+    fetchSuggestions();
+
+    // Event delegation for follow button in suggestions
+    if (suggestionsList) {
+        suggestionsList.addEventListener("click", async (e) => {
+            const followBtn = e.target.closest(".btn-follow-suggestion");
+            if (!followBtn) return;
+
+            const userId = followBtn.dataset.id;
+            const username = followBtn.dataset.username;
+
+            try {
+                const res = await fetch(`/profile/follow/${userId}`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" }
+                });
+                const data = await res.json();
+
+                if (data.flag === 1) {
+                    followBtn.textContent = data.data.requested ? "Requested" : "Following";
+                    followBtn.classList.add("following");
+                    followBtn.disabled = true;
+                    if (typeof showToast !== 'undefined') {
+                        showToast(data.msg || `Following ${username}`, "success");
+                    }
+                } else {
+                    if (typeof showToast !== 'undefined') {
+                        showToast(data.msg || "Error following user", "danger");
+                    }
+                }
+            } catch (error) {
+                console.error("Follow Suggestion Error:", error);
+            }
+        });
+    }
+
     feedPostsContainer.addEventListener("click", async (e) => {
         const likeBtn = e.target.closest(".like-btn");
         if (likeBtn) {

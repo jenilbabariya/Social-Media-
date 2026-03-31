@@ -3,6 +3,7 @@ import fs from "fs";
 import { errorResponse, successResponse } from "../lib/general.js";
 import FollowRequest from "../models/followRequest.model.js";
 import Notification from "../models/notifications.model.js";
+import { getIO } from "../config/socket.js";
 export const getProfilePage = async (req, res) => {
   try {
     const { username } = req.params;
@@ -142,6 +143,21 @@ export const followUser = async (req, res) => {
       const followersCount = await Follow.countDocuments({ following: followingId });
       const followingCount = await Follow.countDocuments({ follower: followingId });
 
+      // Fetch sender's profile picture
+      const senderProfile = await Profile.findOne({ userId: followerId }, "profilePicture");
+
+      // Emit notification socket event
+      const io = getIO();
+      io.to(`user:${followingId}`).emit("notification:new", {
+        type: "follow_request",
+        sender: {
+          _id: followerId,
+          username: req.user.username,
+          profilePicture: senderProfile?.profilePicture || null
+        },
+        message: `${req.user.username} sent you a follow request`
+      });
+
       return res.status(200).json(
         successResponse("Follow request sent", {
           requested: true,
@@ -164,6 +180,21 @@ export const followUser = async (req, res) => {
       sender: followerId,
       type: "follow",
       message: `${req.user.username} started following you`,
+    });
+
+    // Fetch sender's profile picture
+    const senderProfile = await Profile.findOne({ userId: followerId }, "profilePicture");
+
+    // Emit notification socket event
+    const io = getIO();
+    io.to(`user:${followingId}`).emit("notification:new", {
+      type: "follow",
+      sender: {
+        _id: followerId,
+        username: req.user.username,
+        profilePicture: senderProfile?.profilePicture || null
+      },
+      message: `${req.user.username} started following you`
     });
 
     res.status(200).json(

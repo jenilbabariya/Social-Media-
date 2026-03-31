@@ -142,7 +142,7 @@ export const acceptFollowRequest = async (req, res) => {
         await Notification.create({
             recipient: request.sender,
             sender: userId,
-            type: "follow",
+            type: "follow_accept",
             message: `${req.user.username} accepted your follow request`,
         });
 
@@ -151,7 +151,7 @@ export const acceptFollowRequest = async (req, res) => {
 
         const io = getIO();
         io.to(`user:${request.sender}`).emit("notification:new", {
-            type: "follow",
+            type: "follow_accept",
             sender: {
                 _id: userId,
                 username: req.user.username,
