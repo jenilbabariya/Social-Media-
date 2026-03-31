@@ -1,4 +1,5 @@
 import { User, Profile, Follow } from "../models/user.model.js";
+import fs from "fs";
 import { errorResponse, successResponse } from "../lib/general.js";
 import FollowRequest from "../models/followRequest.model.js";
 import Notification from "../models/notifications.model.js";
@@ -235,7 +236,6 @@ export const getConnectionsPage = async (req, res) => {
     const type = req.query.type || "followers";
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 5;
-
     const skip = (page - 1) * limit;
 
     let query = {};
@@ -253,11 +253,12 @@ export const getConnectionsPage = async (req, res) => {
         "username"
       )
       .skip(skip)
-      .limit(limit);
+      .limit(limit)
+      .lean();
 
-    const users = data.map(d =>
-      type === "followers" ? d.follower : d.following
-    );
+    const users = data
+      .map(d => (type === "followers" ? d.follower : d.following))
+      .filter(u => u !== null);
 
     const userIds = users.map(u => u._id);
     const profiles = await Profile.find({ userId: { $in: userIds } }, "userId profilePicture");
@@ -271,21 +272,27 @@ export const getConnectionsPage = async (req, res) => {
       profilePicture: profileMap[u._id.toString()] || null
     }));
 
+    const responseData = {
+      users: usersWithPictures,
+      type,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+      userId,
+    };
+
+    if (req.xhr || req.headers.accept.indexOf('json') > -1) {
+      return res.status(200).json(successResponse("Connections fetched successfully", responseData));
+    }
+
     res.render("connections.ejs", {
       header: {
         title: `${type.charAt(0).toUpperCase() + type.slice(1)} || Social Media`
       },
       footer: {
-        js: []
+        js: ["connections"]
       },
-      body: {
-        users: usersWithPictures,
-        type,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-        userId,
-      },
+      body: responseData,
     });
 
   } catch (error) {

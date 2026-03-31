@@ -1,21 +1,20 @@
 <%- include("partials/header", {header}) %>
 
 <div class="connections-container">
-
     <!-- Tab Bar -->
     <div class="tabs">
-        <a href="/profile/<%= body.userId %>/connections?type=followers"
-           class="tab <%= body.type === 'followers' ? 'active' : '' %>">
+        <a href="/profile/<%= body.userId %>/connections?type=followers&limit=<%= body.limit %>"
+           class="tab <%= body.type === 'followers' ? 'active' : '' %>" data-type="followers">
             Followers
         </a>
-        <a href="/profile/<%= body.userId %>/connections?type=following"
-           class="tab <%= body.type === 'following' ? 'active' : '' %>">
+        <a href="/profile/<%= body.userId %>/connections?type=following&limit=<%= body.limit %>"
+           class="tab <%= body.type === 'following' ? 'active' : '' %>" data-type="following">
             Following
         </a>
     </div>
 
-    <!-- Users List -->
-    <div class="list">
+    <!-- Users List Wrapper -->
+    <div id="connections-list" class="list">
         <% if (body.users.length === 0) { %>
             <div class="empty">
                 <i class="bi bi-people" style="font-size: 40px; color: var(--bs-primary);"></i>
@@ -33,30 +32,28 @@
         <% }) %>
     </div>
 
-    <!-- Pagination -->
+    <!-- Pagination Wrapper -->
     <div class="pagination">
 
-        <form method="GET">
-            <input type="hidden" name="type" value="<%= body.type %>">
+        <form id="pagination-form" method="GET" action="/profile/<%= body.userId %>/connections">
+            <input type="hidden" name="type" id="connection-type" value="<%= body.type %>">
             <label class="me-2 text-muted" style="font-size: 14px;">Per page:</label>
-            <select name="limit" onchange="this.form.submit()" class="form-select form-select-sm d-inline-block w-auto">
+            <select name="limit" id="limit-select" class="form-select form-select-sm d-inline-block w-auto">
                 <option value="5"  <%= body.limit==5  ? 'selected' : '' %>>5</option>
                 <option value="10" <%= body.limit==10 ? 'selected' : '' %>>10</option>
                 <option value="20" <%= body.limit==20 ? 'selected' : '' %>>20</option>
             </select>
         </form>
 
-        <div class="page-buttons">
+        <div id="page-buttons" class="page-buttons">
             <% if (body.page > 1) { %>
-                <a href="?type=<%= body.type %>&page=<%= body.page-1 %>&limit=<%= body.limit %>" class="btn btn-primary-custom">Prev</a>
+                <a href="?type=<%= body.type %>&page=<%= body.page-1 %>&limit=<%= body.limit %>" class="btn btn-primary-custom" data-page="<%= body.page-1 %>">Prev</a>
             <% } %>
             <% if (body.page < body.totalPages) { %>
-                <a href="?type=<%= body.type %>&page=<%= body.page+1 %>&limit=<%= body.limit %>" class="btn btn-primary-custom">Next</a>
+                <a href="?type=<%= body.type %>&page=<%= body.page+1 %>&limit=<%= body.limit %>" class="btn btn-primary-custom" data-page="<%= body.page+1 %>">Next</a>
             <% } %>
         </div>
-
     </div>
-
 </div>
 
 <%- include("partials/footer", {footer}) %>

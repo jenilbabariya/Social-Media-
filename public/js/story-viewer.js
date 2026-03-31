@@ -45,20 +45,20 @@ document.addEventListener("DOMContentLoaded", () => {
     function renderStoriesTray() {
         const feedContainer = document.querySelector(".feed-page-container");
         const currentUserId = feedContainer ? feedContainer.getAttribute("data-user-id") : null;
-        
+
         const addStoryBtn = document.getElementById("addStoryBtn");
         const currentUserWrapper = document.getElementById("currentUserStoryWrapper");
-        
+
         // Remove existing "other" story items
         const existingOthers = storiesTray.querySelectorAll(".story-item:not(#addStoryBtn)");
         existingOthers.forEach(el => el.remove());
 
         let currentUserGroupIdx = -1;
-        
+
         storyItemElements = [];
         allStoriesGrouped.forEach((group, index) => {
             const isCurrentUser = currentUserId && group.user._id.toString() === currentUserId;
-            
+
             if (isCurrentUser) {
                 currentUserGroupIdx = index;
                 currentUserWrapper.classList.remove("no-stories");
@@ -135,13 +135,13 @@ document.addEventListener("DOMContentLoaded", () => {
             barBg.className = "progress-bar-bg";
             const barFill = document.createElement("div");
             barFill.className = "progress-bar-fill";
-            
+
             if (idx < currentStoryIndex) {
                 barFill.style.width = "100%";
             } else if (idx === currentStoryIndex) {
                 barFill.id = "activeProgressFill";
             }
-            
+
             barBg.appendChild(barFill);
             progressBarContainer.appendChild(barBg);
         });
@@ -161,7 +161,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // Show viewer count if it's current user's story
         const feedContainer = document.querySelector(".feed-page-container");
         const currentUserId = feedContainer ? feedContainer.getAttribute("data-user-id") : null;
-        
+
         if (currentUserId && group.user._id.toString() === currentUserId) {
             storyFooter.classList.remove("d-none");
             const count = story.viewerCount || 0;
@@ -177,7 +177,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // Start Progress Animation
         const activeFill = document.getElementById("activeProgressFill");
         let start = Date.now();
-        
+
         progressInterval = setInterval(() => {
             let elapsed = Date.now() - start;
             let progress = (elapsed / STORY_DURATION) * 100;
@@ -226,14 +226,14 @@ document.addEventListener("DOMContentLoaded", () => {
     async function markStoryViewed(storyId) {
         try {
             await fetch(`/api/stories/${storyId}/view`, { method: "POST" });
-            
+
             // Update local state and UI
             const group = allStoriesGrouped[currentUserGroupIndex];
             if (group) {
                 const story = group.stories[currentStoryIndex];
                 // Increment viewer count locally if not already viewed by current user (though it's unlikely to be owner viewing it for the first time)
                 // Actually, backend markStoryViewed handles it. 
-                
+
                 if (!group.isViewed) {
                     if (currentStoryIndex === group.stories.length - 1) {
                         group.isViewed = true;
@@ -254,13 +254,14 @@ document.addEventListener("DOMContentLoaded", () => {
         clearStoryTimers();
         if (storyMediaVid) storyMediaVid.pause();
 
+
         viewersListOverlay.classList.add("active");
         viewersListContent.innerHTML = '<div class="text-center p-4"><div class="spinner-border spinner-border-sm" role="status"></div></div>';
 
         try {
             const res = await fetch(`/api/stories/${storyId}/viewers`);
             const data = await res.json();
-            
+
             if (data.flag === 1) {
                 renderViewersList(data.data);
             } else {
