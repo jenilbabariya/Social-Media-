@@ -36,7 +36,7 @@
         <% } %>
 
         <% body.notifications.forEach(function(notif) { %>
-            <div class="notification-card <%= notif.isRead ? '' : 'unread' %>" data-id="<%= notif._id %>">
+            <div class="notification-card <%= notif.isRead ? '' : 'unread' %>" data-id="<%= notif._id %>" data-reference="<%= notif.reference %>" data-type="<%= notif.type %>">
 
                 <div class="notification-avatar">
                     <img src="<%= notif.senderProfile?.profilePicture || '/images/default-avatar.png' %>"

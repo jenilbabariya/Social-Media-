@@ -51,6 +51,9 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll(".notification-card:not(.request-card)").forEach(card => {
         card.addEventListener("click", async () => {
             const notificationId = card.dataset.id;
+            const refId = card.dataset.reference;
+            const type = card.dataset.type;
+            
             if (card.classList.contains("unread")) {
                 try {
                     const res = await fetch(`/notifications/mark-as-read/${notificationId}`, {
@@ -78,6 +81,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 } catch (error) {
                     console.error("Error marking notification as read:", error);
                 }
+            }
+            
+            if (refId && ['like', 'comment', 'mention'].includes(type) && refId !== 'null' && refId !== 'undefined') {
+                window.location.href = `/p/${refId}`;
             }
         });
     });
@@ -153,6 +160,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const card = document.createElement("div");
         card.className = "notification-card unread";
         card.dataset.id = data._id || Date.now();
+        if (data.postId) card.dataset.reference = data.postId;
+        if (data.type) card.dataset.type = data.type;
         
         const profilePic = data.sender?.profilePicture || "/images/default-avatar.png";
         
@@ -183,7 +192,33 @@ document.addEventListener("DOMContentLoaded", () => {
             if (card.classList.contains("unread")) {
                 card.classList.remove("unread");
                 card.querySelector(".notification-dot")?.remove();
-                // We'd ideally call mark-as-read API here if we had the ID
+                
+                if (data._id) {
+                    try {
+                        await fetch(`/notifications/mark-as-read/${data._id}`, {
+                            method: "PUT",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ id: data._id })
+                        });
+                        
+                        const badge = document.getElementById("notif-unread-badge");
+                        if (badge) {
+                            const count = parseInt(badge.textContent) - 1;
+                            if (count <= 0) {
+                                badge.remove();
+                                document.getElementById("markAllRead")?.remove();
+                            } else {
+                                badge.textContent = count;
+                            }
+                        }
+                    } catch (error) {
+                        console.error("Error marking real-time notification as read:", error);
+                    }
+                }
+            }
+            
+            if (data.postId && ['like', 'comment', 'mention'].includes(data.type)) {
+                window.location.href = `/p/${data.postId}`;
             }
         });
     };
