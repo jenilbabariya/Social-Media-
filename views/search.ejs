@@ -5,14 +5,38 @@
         <h2 class="fw-bold">Search</h2>
         <div class="search-input-wrapper position-relative">
             <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
-            <input type="text" id="userSearchInput" class="form-control form-control-lg ps-5 rounded-pill border-0 shadow-sm" placeholder="Search for usernames..." autocomplete="off">
+            <input type="text" id="userSearchInput" class="form-control form-control-lg ps-5 rounded-pill border-0 shadow-sm" style="background-color: #efefef; font-size: 0.95rem;" placeholder="Search for people and creators..." autocomplete="off">
         </div>
     </div>
 
-    <div id="searchResults" class="search-results mt-4">
-        <div class="text-center text-muted mt-5">
-            <p>Start typing to search for users</p>
+    <div id="exploreGrid" class="explore-grid mt-4">
+        <h5 class="mb-3 fw-bold text-muted d-flex align-items-center">
+            <i class="bi bi-stars me-2" style="color: var(--bs-primary);"></i>
+            Explore
+        </h5>
+        <div class="row g-2">
+            <% if (body.trendingPosts && body.trendingPosts.length > 0) { %>
+                <% body.trendingPosts.forEach(post => { %>
+                    <div class="col-4">
+                        <a href="/p/<%= post._id %>" class="explore-item-link">
+                            <div class="explore-item position-relative">
+                                <img src="<%= post.media[0].url %>" alt="Post Image" class="explore-img w-100">
+                                <div class="explore-overlay">
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                <% }) %>
+            <% } else { %>
+                <div class="col-12 text-center text-muted py-5">
+                    <i class="bi bi-compass display-4"></i>
+                    <p class="mt-2">No trending posts found.</p>
+                </div>
+            <% } %>
         </div>
+    </div>
+
+    <div id="searchResults" class="search-results mt-4" style="display: none;">
     </div>
 </div>
 

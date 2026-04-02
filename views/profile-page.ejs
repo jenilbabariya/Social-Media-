@@ -19,46 +19,54 @@
 
   <div class="profile-info-section">
 
-    <div class="profile-actions d-flex justify-content-center">
+    <div class="profile-actions d-flex justify-content-center mb-3">
       <% if (body.viewType === "owner") { %>
-      <a href="/profile/edit/<%- body.profileUser._id %>" class="btn btn-primary px-4">Edit Profile</a>
+      <a href="/profile/edit/<%- body.profileUser._id %>" class="btn btn-primary px-4 fw-bold rounded-pill">Edit Profile</a>
       <% } else if (body.viewType === "public") { %>
-      <button class="btn btn-primary-custom px-4" id="followBtn" data-id="<%= body.profileUser._id %>" data-following="<%= body.isFollower ? 'true' : 'false' %>" data-requested="false">
+      <button class="btn btn-primary px-4 fw-bold rounded-pill" id="followBtn" data-id="<%= body.profileUser._id %>" data-following="<%= body.isFollower ? 'true' : 'false' %>" data-requested="false">
         <%= body.isFollower ? 'Unfollow' : 'Follow' %>
       </button>
       <% } else if (body.viewType === "private") { %>
-      <button class="btn btn-primary-custom px-4" id="followBtn" data-id="<%= body.profileUser._id %>" data-following="<%= body.isFollower ? 'true' : 'false' %>" data-requested="<%= body.isRequested ? 'true' : 'false' %>">
+      <button class="btn btn-primary px-4 fw-bold rounded-pill" id="followBtn" data-id="<%= body.profileUser._id %>" data-following="<%= body.isFollower ? 'true' : 'false' %>" data-requested="<%= body.isRequested ? 'true' : 'false' %>">
         <%= body.isFollower ? 'Unfollow' : body.isRequested ? 'Requested' : 'Follow' %>
       </button>
       <% } %>
     </div>
 
-    <div class="profile-stats" data-private="<%= body.profileUser.accountMeta?.isPrivate ? 'true' : 'false' %>" data-userid="<%= body.profileUser._id %>">
+    <div class="profile-stats d-flex justify-content-center gap-4 mb-3" data-private="<%= body.profileUser.accountMeta?.isPrivate ? 'true' : 'false' %>" data-userid="<%= body.profileUser._id %>">
       <% if(!body.profileUser.accountMeta?.isPrivate || body.viewType === "owner" || body.isFollower) { %>
-      <a href="/profile/<%= body.profileUser._id %>/connections?type=followers" class="stat-item">
-        <strong id="followersCount"><%= body.followersCount || 0 %></strong>
-        <span>Followers</span>
+      <div class="stat-item text-center">
+        <strong id="postCount" class="fs-5 text-primary"><%= body.postCount || 0 %></strong>
+        <span class="d-block text-muted small">Posts</span>
+      </div>
+      <a href="/profile/<%= body.profileUser._id %>/connections?type=followers" class="stat-item text-center text-decoration-none">
+        <strong id="followersCount" class="fs-5 text-primary"><%= body.followersCount || 0 %></strong>
+        <span class="d-block text-muted small">Followers</span>
       </a>
-      <a href="/profile/<%= body.profileUser._id %>/connections?type=following" class="stat-item">
-        <strong id="followingCount"><%= body.followingCount || 0 %></strong>
-        <span>Following</span>
+      <a href="/profile/<%= body.profileUser._id %>/connections?type=following" class="stat-item text-center text-decoration-none">
+        <strong id="followingCount" class="fs-5 text-primary"><%= body.followingCount || 0 %></strong>
+        <span class="d-block text-muted small">Following</span>
       </a>
       <% } else { %>
-      <div class="stat-item">
-        <strong><%= body.followersCount || 0 %></strong>
-        <span>Followers</span>
+      <div class="stat-item text-center">
+        <strong class="fs-5 text-primary"><%= body.postCount || 0 %></strong>
+        <span class="d-block text-muted small">Posts</span>
       </div>
-      <div class="stat-item">
-        <strong><%= body.followingCount || 0 %></strong>
-        <span>Following</span>
+      <div class="stat-item text-center">
+        <strong class="fs-5 text-primary"><%= body.followersCount || 0 %></strong>
+        <span class="d-block text-muted small">Followers</span>
+      </div>
+      <div class="stat-item text-center">
+        <strong class="fs-5 text-primary"><%= body.followingCount || 0 %></strong>
+        <span class="d-block text-muted small">Following</span>
       </div>
       <% } %>
     </div>
 
 
     <% if (body.profile?.bio) { %>
-    <div class="profile-bio-section">
-      <p class="profile-bio">
+    <div class="profile-bio-section d-flex justify-content-center mb-4">
+      <p class="profile-bio text-center text-secondary m-0" style="max-width: 400px; font-size: 0.95rem;">
         <%= body.profile.bio %>
       </p>
     </div>

@@ -231,13 +231,23 @@ export const renderSearchPage = async (req, res) => {
     const profile = await Profile.findOne({ userId: req.user._id }, "profilePicture");
     if (profile) user.profilePicture = profile.profilePicture;
 
+    const trendingPosts = await Post.find({
+      isDeleted: false,
+      status: "published",
+      visibility: "public"
+    })
+      .sort({ likesCount: -1, commentsCount: -1 })
+      .limit(24)
+      .lean();
+
     res.render("search.ejs", {
       header: {
         title: "Search | SocialMedia",
         css: ["search"]
       },
       body: {
-        currentUser: user
+        currentUser: user,
+        trendingPosts
       },
       footer: {
         js: ["search"]

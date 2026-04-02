@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
 
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             const result = await response.json();
 
             if (result.flag === 1) {
@@ -27,10 +28,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 renderPagination(data.page, data.totalPages, data.type, data.limit);
 
                 typeInput.value = data.type;
+                if (limitSelect) limitSelect.value = data.limit;
                 updateTabs(data.type);
             }
         } catch (error) {
-            // Error handling
+            console.error("Failed to update connections:", error);
         } finally {
             document.querySelector('.connections-container').classList.remove('loading');
         }
@@ -84,9 +86,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     pageButtons.addEventListener('click', (e) => {
-        if (e.target.tagName === 'A') {
+        const btn = e.target.closest('a');
+        if (btn) {
             e.preventDefault();
-            const page = e.target.dataset.page;
+            const page = btn.dataset.page;
             updateConnections(typeInput.value, page, limitSelect.value);
         }
     });

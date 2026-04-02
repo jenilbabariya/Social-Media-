@@ -1,4 +1,5 @@
 import { User, Profile, Follow } from "../models/user.model.js";
+import Post from "../models/post.model.js";
 import fs from "fs";
 import { errorResponse, successResponse } from "../lib/general.js";
 import FollowRequest from "../models/followRequest.model.js";
@@ -62,6 +63,7 @@ export const getProfilePage = async (req, res) => {
 
     const followersCount = await Follow.countDocuments({ following: profileUser._id });
     const followingCount = await Follow.countDocuments({ follower: profileUser._id });
+    const postCount = await Post.countDocuments({ user: profileUser._id });
     return res.render("profile-page.ejs", {
       header: {
         title: "profile || Social Media"
@@ -76,7 +78,8 @@ export const getProfilePage = async (req, res) => {
         isRequested,
         isFollower,
         followersCount,
-        followingCount
+        followingCount,
+        postCount
       },
 
       footer: {

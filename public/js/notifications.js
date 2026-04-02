@@ -32,6 +32,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
                 const data = await res.json();
                 if (data.flag === 1) {
+                    const badge = document.getElementById("notif-unread-badge");
+                    const unreadCountToRemove = badge ? parseInt(badge.textContent) : 0;
+
                     document.querySelectorAll(".notification-card.unread").forEach(el => {
                         el.classList.remove("unread");
                         el.querySelector(".notification-dot")?.remove();
@@ -39,7 +42,18 @@ document.addEventListener("DOMContentLoaded", () => {
                     markAllReadButton.remove();
 
                     // Remove the badge from the Notifications tab
-                    document.getElementById("notif-unread-badge")?.remove();
+                    if (badge) badge.remove();
+
+                    // Update sidebar badge
+                    const sidebarBadge = document.querySelector(".sidebar-notif-badge");
+                    if (sidebarBadge && unreadCountToRemove > 0) {
+                        const newCount = parseInt(sidebarBadge.textContent) - unreadCountToRemove;
+                        if (newCount <= 0) {
+                            sidebarBadge.remove();
+                        } else {
+                            sidebarBadge.textContent = newCount;
+                        }
+                    }
                 }
             } catch (error) {
                 console.error("Error marking notifications as read:", error);
@@ -75,6 +89,17 @@ document.addEventListener("DOMContentLoaded", () => {
                                 document.getElementById("markAllRead")?.remove();
                             } else {
                                 badge.textContent = count;
+                            }
+                        }
+
+                        // Decrement sidebar badge count
+                        const sidebarBadge = document.querySelector(".sidebar-notif-badge");
+                        if (sidebarBadge) {
+                            const count = parseInt(sidebarBadge.textContent) - 1;
+                            if (count <= 0) {
+                                sidebarBadge.remove();
+                            } else {
+                                sidebarBadge.textContent = count;
                             }
                         }
                     }
@@ -113,6 +138,17 @@ document.addEventListener("DOMContentLoaded", () => {
                                 badge.remove();
                             } else {
                                 badge.textContent = count;
+                            }
+                        }
+
+                        // Decrement sidebar badge count
+                        const sidebarBadge = document.querySelector(".sidebar-notif-badge");
+                        if (sidebarBadge) {
+                            const count = parseInt(sidebarBadge.textContent) - 1;
+                            if (count <= 0) {
+                                sidebarBadge.remove();
+                            } else {
+                                sidebarBadge.textContent = count;
                             }
                         }
 
@@ -209,6 +245,17 @@ document.addEventListener("DOMContentLoaded", () => {
                                 document.getElementById("markAllRead")?.remove();
                             } else {
                                 badge.textContent = count;
+                            }
+                        }
+
+                        // Decrement sidebar badge count
+                        const sidebarBadge = document.querySelector(".sidebar-notif-badge");
+                        if (sidebarBadge) {
+                            const count = parseInt(sidebarBadge.textContent) - 1;
+                            if (count <= 0) {
+                                sidebarBadge.remove();
+                            } else {
+                                sidebarBadge.textContent = count;
                             }
                         }
                     } catch (error) {

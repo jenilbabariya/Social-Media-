@@ -18,11 +18,21 @@ socket.on("notification:new", (data) => {
     }
 
     // Update notification badge if it exists
-    const badge = document.querySelector(".notification-badge");
-    if (badge) {
-        const currentCount = parseInt(badge.innerText) || 0;
-        badge.innerText = currentCount + 1;
-        badge.classList.remove("d-none");
+    let sidebarBadge = document.querySelector(".sidebar-notif-badge");
+    if (!sidebarBadge) {
+        const navLink = document.querySelector('a[href="/notifications"]');
+        if (navLink) {
+            sidebarBadge = document.createElement("span");
+            sidebarBadge.className = "sidebar-notif-badge ml-auto";
+            sidebarBadge.innerText = "0";
+            navLink.appendChild(sidebarBadge);
+        }
+    }
+    
+    if (sidebarBadge) {
+        const currentCount = parseInt(sidebarBadge.innerText) || 0;
+        sidebarBadge.innerText = currentCount + 1;
+        sidebarBadge.classList.remove("d-none");
     }
 
     // If we are on the notifications page, we might want to reload or prepend

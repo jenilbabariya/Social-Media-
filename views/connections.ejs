@@ -1,6 +1,6 @@
 <%- include("partials/header", {header}) %>
 
-<div class="connections-container">
+<div class="connections-container py-4" data-userid="<%= body.userId %>">
     <!-- Tab Bar -->
     <div class="tabs">
         <a href="/profile/<%= body.userId %>/connections?type=followers&limit=<%= body.limit %>"
@@ -55,5 +55,9 @@
         </div>
     </div>
 </div>
+
+<script>
+    window.CONNECTIONS_USER_ID = document.querySelector('.connections-container').dataset.userid;
+</script>
 
 <%- include("partials/footer", {footer}) %>

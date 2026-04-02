@@ -1,5 +1,6 @@
 const searchInput = document.getElementById('userSearchInput');
 const resultsContainer = document.getElementById('searchResults');
+const exploreGrid = document.getElementById('exploreGrid');
 let debounceTimer;
 
 if (searchInput) {
@@ -9,13 +10,15 @@ if (searchInput) {
         clearTimeout(debounceTimer);
         
         if (!query) {
-            resultsContainer.innerHTML = `
-                <div class="text-center text-muted mt-5">
-                    <p>Start typing to search for users</p>
-                </div>
-            `;
+            resultsContainer.innerHTML = '';
+            resultsContainer.style.display = 'none';
+            if (exploreGrid) exploreGrid.style.display = 'block';
             return;
         }
+
+        // Hide explore grid and show results container
+        if (exploreGrid) exploreGrid.style.display = 'none';
+        resultsContainer.style.display = 'block';
 
         debounceTimer = setTimeout(() => {
             fetchUsers(query);
