@@ -131,7 +131,22 @@ export const getPost = async (req, res) => {
         const userId = req.user._id;
 
         const post = await Post.findOne({ _id: postId, status: "published" })
-            .populate("user", "username");
+            .populate({
+                path: "user",
+                select: "username accountMeta"
+            });
+
+        if (!post) {
+            return res.status(404).json(errorResponse("Post not found"));
+        }
+
+        // Privacy check
+        if (post.user.accountMeta?.isPrivate && post.user._id.toString() !== userId.toString()) {
+            const isFollower = await Follow.exists({ follower: userId, following: post.user._id });
+            if (!isFollower) {
+                return res.status(403).json(errorResponse("This account is private. Follow to see posts."));
+            }
+        }
 
         const isLiked = await Like.exists({ user: userId, post: postId });
         const isBookmarked = await Bookmark.exists({ user: userId, posts: postId });
@@ -158,6 +173,21 @@ export const getUserPosts = async (req, res) => {
         const targetUser = await User.findOne({ username });
         if (!targetUser) {
             return res.status(404).json(errorResponse("User not found"));
+        }
+
+        // Privacy Check
+        if (targetUser.accountMeta?.isPrivate && targetUser._id.toString() !== userId.toString()) {
+            const isFollower = await Follow.exists({ follower: userId, following: targetUser._id });
+            if (!isFollower) {
+                return res.status(200).json(successResponse("This account is private", {
+                    posts: [],
+                    page,
+                    limit,
+                    total: 0,
+                    totalPages: 0,
+                    isPrivate: true
+                }));
+            }
         }
 
         const query = { user: targetUser._id, status: "published" };
@@ -419,10 +449,14 @@ export const toggleLike = async (req, res) => {
         if (existingLike) {
             // Unlike
             await Like.deleteOne({ _id: existingLike._id });
-            post.likesCount = Math.max(0, post.likesCount - 1);
-            await post.save();
+            const updatedPost = await Post.findByIdAndUpdate(postId, { $inc: { likesCount: -1 } }, { new: true });
+            const likesCount = Math.max(0, updatedPost.likesCount);
+            if (updatedPost.likesCount < 0) {
+                updatedPost.likesCount = 0;
+                await updatedPost.save();
+            }
 
-            // Delete the corresponding notification if it exists (optional but good)
+            // Delete the corresponding notification if it exists
             await Notification.findOneAndDelete({
                 recipient: post.user,
                 sender: userId,
@@ -435,16 +469,16 @@ export const toggleLike = async (req, res) => {
             const io = getIO();
             io.to(`post:${postId}`).emit("post:unliked", {
                 userId,
-                likesCount: post.likesCount,
+                likesCount,
                 isLiked: false
             });
 
-            return res.status(200).json(successResponse("Post unliked", { likesCount: post.likesCount, isLiked: false }));
+            return res.status(200).json(successResponse("Post unliked", { likesCount, isLiked: false }));
         } else {
             // Like
             await Like.create({ user: userId, post: postId });
-            post.likesCount += 1;
-            await post.save();
+            const updatedPost = await Post.findByIdAndUpdate(postId, { $inc: { likesCount: 1 } }, { new: true });
+            const likesCount = updatedPost.likesCount;
 
             // Create notification (if not liking own post)
             if (post.user.toString() !== userId.toString()) {
@@ -478,11 +512,11 @@ export const toggleLike = async (req, res) => {
             const io = getIO();
             io.to(`post:${postId}`).emit("post:liked", {
                 userId,
-                likesCount: post.likesCount,
+                likesCount,
                 isLiked: true
             });
 
-            return res.status(200).json(successResponse("Post liked", { likesCount: post.likesCount, isLiked: true }));
+            return res.status(200).json(successResponse("Post liked", { likesCount, isLiked: true }));
         }
 
     } catch (error) {

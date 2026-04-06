@@ -30,9 +30,11 @@ const getStories = async (req, res) => {
         const userIds = following.map((f) => f.following);
         userIds.push(req.user._id); // Include current user's stories
 
-        // Fetch stories from these users
+        // Fetch stories from these users (only from last 24h)
+        const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
         const stories = await Story.find({
             user: { $in: userIds },
+            createdAt: { $gte: twentyFourHoursAgo }
         })
             .populate("user", "username fullname")
             .sort({ createdAt: 1 });
